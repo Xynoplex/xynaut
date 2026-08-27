@@ -1,0 +1,617 @@
+# semiont launcher
+
+A host-installed CLI that runs a local Semiont stack — Neo4j, Qdrant, Ollama,
+PostgreSQL, the Semiont API server, worker, smelter, weaver, and the Browser —
+by driving your container runtime (Apple `container`, Docker, or Podman)
+directly. It replaces the `.semiont/scripts/{start,logs,stop}.sh` trio that
+used to be synced into every KB repository.
+
+## Install
+
+```sh
+brew install the-ai-alliance/semiont/semiont
+```
+
+macOS and Linux (and Windows via WSL2), arm64 and amd64. The binary is static:
+no language runtime bleeds onto your host. Besides the launcher you need only
+`git` and one container runtime (`container`, `docker`, or `podman`) on PATH.
+
+## Use
+
+Run from inside a KB clone — or birth one first with **`semiont init`**
+Interactive with full flag
+parity; `--yes` refuses rather than guessing where no safe default exists.
+What init does:
+
+- **Identity at birth**: the permanent did:web domain from `--domain`, the
+  git origin (`<owner_lc>.github.io:<name>` — the same rule the template's
+  post-fork action applies), or a prompt that says plainly this is the
+  identity stamped into the committed event log.
+- **A config built, not copied**: `--inference anthropic|ollama --model <id>
+  --embedding ollama:<model>` synthesizes a full semiontconfig from the
+  launcher's own knowledge — the three-name binding roster
+  (gatherer/matcher/workers.default; per-worker refinement is your edit).
+  NOTHING is mastered anywhere.
+- **Choices validated live**: with a key, Anthropic models validate against
+  `/v1/models` (an unlisted id is a refusal printing what exists; no
+  `--model` picks the newest capable, announced); Ollama models pass as
+  installed or registry-verified ("pulled at start"), refuse on the
+  registry's 404, and degrade to accept-with-warning when sources are
+  unreachable — unknown is not missing.
+- **Or copy from the template, explicitly**: `--from-template [url|dir]`
+  shallow-clones and copies its semiontconfigs — each vetted, all-or-nothing
+  — and `--devcontainer` copies the codespace set with the display name
+  rewritten to yours, making a locally-born KB `--runtime codespace`
+  eligible. Identity is NEVER copied.
+- **Every config write — generated or copied — passes the plan deriver
+  first**: a bug or a version-skewed template is a pre-write refusal
+  carrying the parser's own error, never a KB that cannot start.
+
+```sh
+semiont init --yes --inference anthropic --embedding ollama:nomic-embed-text
+```
+
+births a startable KB in one command (identity from your git origin). Then:
+
+```sh
+semiont start
+semiont useradd --email admin@example.com --admin   # prompts for the password
+semiont status
+semiont logs
+semiont stop
+```
+
+- `semiont start --help` lists all flags (`--config`, `--runtime`,
+  `--no-observe`, `--ollama-cache`, …).
+- **The Browser is not a stack member** (BROWSER-LIFECYCLE.md): it is the
+  machine-level viewer of every KB, local and codespace, discovery-synced.
+  ANY start ensures it — including a codespace start, when a local container
+  runtime exists — and none churns it: a running Browser is KEPT when its
+  image matches what the start would run (image identity, not tag order),
+  restarted when stale. A bare `semiont stop` leaves it running, announced;
+  `semiont stop --service browser` is the explicit off-switch. Its record
+  lives beside the stacks (machine-level, with its runtime and image), its
+  port is never among a stack's claims, and `status` opens with a BROWSER
+  section — first because it sits architecturally above everything it views
+  — showing its image tag so browser-vs-stack version skew is visible.
+- `semiont start --service browser --port <n>` moves the Browser — the ONE
+  port a flag may move — and is also the explicit refresh (it always
+  restarts, bypassing keep-if-current). A non-3000 port warns that anything
+  holding `http://localhost:3000` literally will not follow it.
+- **`semiont secret` registers where config secrets come from** — pointers,
+  never values. `semiont secret set ANTHROPIC_API_KEY` walks an interactive
+  provider-then-path flow (or pass the source directly:
+  `… set ANTHROPIC_API_KEY op://OSS/Anthropic/credential`); either form
+  stores `{provider, path}` in `roots.json`
+  (verified with one read at set time, value discarded); every later start
+  that needs the var announces the reach (`ANTHROPIC_API_KEY: reading from
+  1Password (op read op://…) — expect an authorization prompt`) and reads it
+  fresh — no secret value is ever persisted, echoed, or logged. The URI
+  scheme selects the provider (only `op://`, the 1Password CLI, today; the
+  registry is built for more). The launcher constructs the invocation itself
+  from the stored path — no stored shell text is ever executed. `op` missing
+  from PATH fails early and clearly. And the standing escape hatch needs no
+  1Password at all: **exporting the variable always wins** — a plain
+  `ANTHROPIC_API_KEY=… semiont start` behaves exactly as it always has.
+  `--dry-run` reaches for nothing (plan shows `<env:VAR>` placeholders).
+  `semiont secret push <VAR> --repo <owner/name>` is the one place a value
+  *moves*: a codespace runs on GitHub's machine and can't reach your local
+  provider, so this copies the current value into your GitHub Codespaces user
+  secrets. Same discipline — resolved fresh and announced, handed to `gh` on
+  **stdin** so it never appears in argv (where `ps` could read it), encrypted
+  by `gh` before it leaves the machine, never written to disk or logs by us.
+  The repo selection is a **union**, never a replacement, so pushing for one
+  repo can't silently revoke the secret from others already using it.
+- **`semiont start --runtime codespace` runs the same stack on a
+  GitHub-hosted machine** (the KB's devcontainer + compose own the inside;
+  the launcher orchestrates the outside via `gh`, which is required on PATH
+  for this placement only). The REPO is the identity — derived from the KB
+  clone's origin, or `--repo owner/name` from anywhere, needed only at
+  creation: the stack record carries it afterwards, so a bare `semiont
+  start` resumes the recorded codespace from any directory, and `status` /
+  `logs` / `stop` dispatch off the records as always. The launcher keeps at
+  most one codespace per repo (it adopts and resumes what exists — the
+  codespace *name* is a PID, shown by status, input only via `--codespace`
+  when raw `gh` left several). `semiont stop` maps to `gh codespace stop` —
+  billing halts, state and credentials persist, the record is kept; `semiont
+  stop --delete` destroys and forgets. The two long waits narrate
+  themselves: the VM wait redraws the polled state with elapsed time, and a
+  fresh create's health wait tails the devcontainer creation log (`gh
+  codespace logs --follow`) as a sliding window of its last few lines —
+  cleared once healthy; piped output gets 30-second heartbeat lines
+  instead.
+- **Many codespace stacks run concurrently — each forwards its KB on its
+  own local port.** The record store (`stack.json`, schema 3) is a keyed
+  collection: the machine's one local stack (fixed ports and container
+  names keep it singleton) plus one entry per codespace repo. Each
+  codespace stack forwards exactly ONE port — its KB (remote 4000) — on
+  local 4000 when free, else the lowest free port above it (4001, …), so a
+  single browser's Knowledge Bases panel works N codespace KBs at once
+  (Host localhost, Port 400x each; browser, sidecars, and infra stay inside
+  the codespace). Forwards are recorded detached processes: `status`
+  re-establishes a dead one, `stop --repo` ends its own, and a LOCAL start
+  drops only forwards squatting on ports it actually claims — concurrent
+  KBs on allocated ports keep running. With several stacks recorded:
+  `status` opens with a STACKS fleet overview (each stack's state and
+  `KB localhost:<port>`) and details the lone forwarded stack (`--repo`
+  details any); bare `logs` follows the local stack, else the lone
+  codespace; bare `stop` and `useradd`
+  let the working directory disambiguate — inside the clone whose local
+  stack is running they mean local; inside a clone whose origin names a
+  recorded codespace stack (no local stack) they mean that one — and refuse
+  anywhere less certain: `--repo <owner/name>` targets a codespace stack,
+  `--runtime` the local one. Schema 1/2 single-stack records migrate on read.
+- Codespace admin credentials are generated inside the codespace at
+  creation; `start` and `status` read them fresh over ssh and display them —
+  never stored, never logged. Those are the FIRST admin; `useradd --repo`
+  handles every user after it.
+  Preflights fail fast with fixes: `gh` missing/unauthenticated, the
+  `codespace` scope, the `ANTHROPIC_API_KEY` Codespaces user secret, and the
+  VM class. The machine list GitHub returns for a repo is filtered by the
+  devcontainer's `hostRequirements`, so anything offered is adequate by the
+  KB's own declaration — `--machine` defaults to `premiumLinux` when your
+  account can use it and otherwise falls back to the largest it can,
+  announced with the reason; an explicit `--machine` that isn't available is
+  a hard error listing what is (never a silent substitution), and on a
+  resume the flag is called out as inert rather than looking effective.
+  `semiont status --billing` (opt-in, needs gh's
+  `user` scope — it prints the one-line grant command if missing) shows
+  GitHub's own monthly usage report: compute/storage quantities, gross,
+  plan-quota discounts, and the NET actually paid — their numbers verbatim,
+  attributed per repository as GitHub reports it.
+  Status states the burn in FACTS, never invented dollars
+  (rates live on GitHub's pricing page, not in any API): an Available
+  codespace shows its machine and uptime (`Available · premiumLinux 8c/32GB
+  · up 3h20m`), a stopped one shows when storage billing ends by deletion
+  (`storage still bills; auto-deletes 2026-08-19, state and all`), and the
+  up-summary names the machine and its auto-stop.
+  Every create sets the cost levers EXPLICITLY: `--idle-timeout 60m` (auto-
+  stop; looser than GitHub's 30m for long pulls) and `--retention-period
+  720h` (30 days — GitHub's maximum — after which a STOPPED codespace is
+  auto-deleted, state and all; explicit so a tighter account default cannot
+  silently shorten a KB codespace's life). Both are overridable flags on
+  `semiont start`, create-time only: on a resume they are called out as
+  inert, and outside codespace placement they are refused. The create
+  announces both, because a default that deletes user state is never silent.
+  Codespace placement is never sticky — every codespace start says
+  `--runtime codespace` (or rides an existing record).
+- `semiont useradd` creates or updates users in the RUNNING stack: the
+  launcher execs the backend's own `semiont-useradd` inside the backend
+  container (record-driven runtime + container ID, name-scan fallback) and
+  passes every other flag through verbatim (`--admin`, `--generate-password`,
+  `--update`, `--upsert`, …). The backend owns the user schema, the password
+  hashing and the database write; this launcher only decides which stack is
+  meant. The password is the one thing it does NOT pass as an argument: it is
+  prompted for on a terminal (or read from stdin when piped) and fed to
+  `--password-stdin` down the exec's pipe, because argv is readable by every
+  process on the host via `ps` and lands in the caller's shell history. It works against **codespace stacks too** — one hop further out,
+  `gh codespace ssh -- docker exec …` — with every argument shell-quoted,
+  because that remote side runs through a shell (the local `exec` path does
+  not, so a password with spaces or `$` is only a hazard on the codespace
+  route). **Nothing auto-creates an account, codespace or local**: a fresh
+  stack has no users, so this is how the first admin comes to exist. With
+  several stacks recorded it refuses to guess — `--repo <owner/name>` picks a
+  codespace stack, `--runtime` the local one (the same vocabulary `stop`
+  uses). This replaced `start --email/--password`: the admin password used to
+  ride into the backend container as an env var, readable via `inspect` for
+  the stack's whole lifetime — now it exists only in one exec's argv, redacted
+  in the echoed command and the invocation log.
+- `semiont start --dry-run` prints the exact runtime commands a real run would
+  execute — the legibility answer to "what does this binary actually do".
+- **`semiont status` reports in three layers** — LOCAL STACK (the one stack
+  running here, headed by the root it belongs to and its did:web), LOCAL
+  ROOTS, REMOTE KNOWLEDGE BASES (codespace-hosted KBs, their state, and each
+  KB's local port). `--verbose` adds LAUNCHER PATHS — the launcher's own
+  config, cache, log, state, staging and model-cache paths, plus the
+  persistent per-root stack state with its disk consumption: a `data` row
+  for the current root (per-store breakdown — postgres, qdrant, neo4j) and
+  an `all roots` row totaling every root, with orphaned state (its KB
+  directory no longer exists) called out alongside the `semiont clean
+  --root <key>` that removes it. Roots and KBs are the durable
+  things; a stack is status layered on one of them. Per service it
+  shows the container STATE as the runtime sees it plus a host-side health
+  probe, with the concrete product in the service cell (`database
+  (PostgreSQL)`). **A role's platform decides which verbs it has, and a role
+  need not run here.** `embedding` is a role like any other; its platform is
+  external in both shapes — `type = "ollama"` is served by the same Ollama the
+  `inference` role provides, `type = "voyage"` is remote SaaS — so it appears
+  in status (runtime `external`) and supports no start/stop, exactly as an
+  anthropic-typed `inference` or an external `graph` does. A KB with no
+  `[embedding]` section gets a `not configured` row rather than silence.
+  **Exit status:** the default report spans several stacks,
+  so it exits 0 whenever status itself ran — to script health, name one
+  stack: `--root <path|name>`, `--repo <owner/name>`, or `--service <name>`.
+- **A codespace KB's `did:web` is recorded, never inferred.** It is read from
+  the clone whose origin named the repo, or — for a `--repo`-only start with
+  no clone anywhere — from the codespace itself, over the ssh `start` and
+  `status` already make for the admin credentials. `status --repo <owner/name>
+  --refresh` re-reads it to confirm; a disagreement is reported, never
+  silently overwritten. **No reporting command ever wakes a stopped
+  codespace** (an ssh would, resuming compute billing), so `--refresh` on a
+  stopped one says so and skips.
+- **A failed health gate shows the crash where it is**: the launcher prints
+  the last ~20 lines of that container's own logs plus the `semiont logs
+  --service <name>` pointer — the cause of a startup crash is usually
+  sitting right there (a friction log spent most of a day on an errno -35
+  event-log read failure that was in `logs` for the whole 120s backend
+  wait). Service containers run **without `--rm`** for the same reason: a
+  container that CRASHES during the gate used to remove itself, destroying
+  the very logs that explain it ("No such container"). It now remains,
+  Exited and inspectable — status shows it, `semiont logs` reads it — until
+  the next start's preflight or a stop sweeps it. Cleanup was always the
+  launcher's explicit job at both ends; `--rm` only ever subtracted the
+  evidence. (One-shot busybox probes keep `--rm` — nothing to keep.) And on macOS, a KB root under `~/Desktop`, `~/Documents` (only when
+  Finder's "Desktop & Documents Folders" iCloud sync is actually on), or
+  `~/Library/Mobile Documents` draws a start-time WARNING: iCloud evicts
+  file content, and container reads of evicted files fail with that errno
+  -35 — typically only once the event log is non-empty, which masquerades as
+  a regression. A warning, not a refusal: eviction state isn't stable, and
+  the same setup can run fine for months.
+- **The Browser discovery view**: every
+  stack mutation regenerates `<state>/discovery/kbs.json` — each managed KB's
+  localhost endpoint, placement, did:web and site name; `managedBy:
+  semiont-launcher` so the Browser can split managed from manual entries.
+  Endpoints and identity only, never a secret. The schema authority is
+  `specs/src/discovery/DiscoveryDocument.json`, and BOTH languages
+  generate from it — @semiont/core's types.ts via the OpenAPI pipeline, and
+  this launcher's `discovery_types_gen.go` via go-jsonschema (go:generate in
+  discovery.go) — so schema drift is a compile error, not a convention. The
+  Browser container mounts the directory read-only at `/discovery` — inert until the Browser image
+  serves it (lane 2); an empty stack set writes an empty list, because an
+  absent file is ambiguous.
+- `semiont stop` sweeps **every** installed runtime by default, so a stack
+  started under `--runtime docker` can't survive a plain stop. Stop's job
+  isn't done until the ports are actually free: `start` records the host
+  ports the stack claimed (`ports` in `stack.json`), and `stop` polls them
+  after teardown (runtimes release published ports asynchronously), then
+  reports any survivor with its PID and process name — never kills it, since
+  after the sweeps a holder is provably not a Semiont container. `start`'s
+  preflight likewise name-sweeps `semiont-*` under every installed runtime,
+  so a held port at check time means a genuinely foreign process; the error
+  names it and suggests the `kill` for you to run yourself. (There is
+  deliberately no `--force-kill-ports`-style option: the launcher owns
+  everything named `semiont-*` across every runtime it can see, and never
+  signals anything else.)
+- `semiont about` shows what Semiont is, project links, the image registry,
+  and which runtimes were detected on PATH.
+- Every invocation is logged (invoke + exit lines, with `--password` values
+  redacted) to `launcher.log` in the launcher's log home: `~/Library/Logs/
+  semiont` on macOS, `$XDG_STATE_HOME/semiont` (default
+  `~/.local/state/semiont`) on Linux. `semiont status --verbose` lists the dir
+  under LAUNCHER PATHS. Logging is best-effort — it never blocks a command.
+- **The launcher derives its work from the KB's semiontconfig TOML** — the
+  same file the Semiont containers read (see
+  `docs/system/administration/CONFIGURATION.md`). Per dependency role
+  (graph, vectors, database, inference, embedding) the config decides the
+  obligation — the launcher's name for the npm CLI's `platform`:
+  an address on a launcher-injected `${*_HOST}` var → the launcher provides
+  a container (driver by `type`, credentials/ports from the config); any
+  other address → externally provided (verified, never launched, skipped by
+  stop, shown as "external" in status); `platform = "posix"` → host-process
+  reuse; section absent / unreferenced → nothing launched, "not configured"
+  in status. **The inference driver is who performs inference per the
+  bindings, not which process the launcher runs**: any ollama-typed binding →
+  the local-Ollama shape (host-process dance, container fallback); all-remote
+  bindings (Claude throughout) → `inference (Anthropic)`, an external SaaS
+  role that launches nothing. In that second shape the local Ollama the
+  config still needs exists solely for the embedding, so **embedding owns
+  it** — the row reads `embedding (Ollama)` with the host/container runtime,
+  the model pulls ride on it, and its launched container is embedding's to
+  stop. With ollama bindings, embedding instead rides the inference role's
+  Ollama and reports the same provider — one process is never described two
+  ways. `type = "voyage"` is remote SaaS; either way embedding has a status
+  row and start/stop belongs to whatever provides it.
+- **A config naming no vector store or no embedding provider is refused, before
+  anything launches.** Semantic search is always available, so the backend's
+  TOML loader refuses such a config at boot. The launcher reads the same file
+  with its own structs, so it refuses the same configs one round trip earlier —
+  otherwise `semiont start` brings the whole stack up and the backend dies
+  seconds later on a file the launcher already had in its hands. Same rule,
+  same words as the loader's, plus the config path. Both sections are required
+  and `embedding` needs its `model`; the refusal happens in `derivePlan`, so
+  `--dry-run` and the `semiont init` self-vet enforce it too, not just `start`.
+  `type = "memory"` is a first-class vector store to the *backend* and is
+  refused *here* with its own explanation: a launcher-managed stack runs the
+  backend and the Smelter as separate containers, and an in-process index
+  cannot be shared across them.
+- **The inference and embedding rows list their models.** Which models a stack
+  uses is config truth, recorded at start (the union of `actors.*` and
+  `workers.*` inference models, and `embedding.model`); whether each is pulled
+  is verified live against Ollama's `/api/tags` and `/api/ps`, with size,
+  parameter count and quantization. **Nothing in the launcher pulls models**, so
+  a model that was never pulled is otherwise invisible until a worker reaches
+  for it mid-job and fails. **`semiont start` now pulls them**: after Ollama is
+  up it lists what is installed and pulls each configured model that is
+  absent, over Ollama's HTTP API (one path for both a host process and the
+  launcher's container — no `ollama` CLI needed on PATH). Only models Ollama
+  can actually serve are pulled: ollama-typed bindings plus an ollama
+  embedding, never a Claude. If Ollama cannot be listed, NOTHING is pulled —
+  unknown is not missing, and re-downloading gigabytes a user already has is
+  the worse error. A failed pull warns and leaves the stack running rather
+  than aborting it. Status still marks anything absent `MISSING` with the
+  `ollama pull` to fix it. **Remote (Anthropic) models get the same treatment
+  through `/v1/models`**: while the API key is in hand at start, one GET
+  records each configured model's display name, release month, and context
+  window — and warns when a model is NOT listed for that key (withdrawn, or a
+  typo'd id), the remote analog of MISSING and today's only signal before a
+  job fails on it. Status renders the recorded metadata, refreshing it live
+  only when `ANTHROPIC_API_KEY` is already in its environment — status never
+  resolves secrets. NO costs: Anthropic exposes no price list programmatically
+  (the pricing page is docs-only; actual spend needs the org-level Admin API,
+  a different credential — a deferred follow-up). An unreachable Ollama reads `unknown`, never `missing`: ignorance
+  and a finding are different answers. Untagged config names are matched
+  against Ollama's `:latest` form. Remote models (Claude, Voyage) list as
+  `remote` — there is nothing to install.
+  Moving `database.port` moves the publish/checks/gates with it;
+  a local Ollama runs only when the config references ollama — owned by
+  inference when the bindings use it, by embedding when only the embedding
+  does. An optional `image`
+  key per role section overrides the catalog's default image — a KB can pin
+  or upgrade an infra image without a launcher release. `--dry-run` renders
+  the derived plan.
+- **Model rows carry the platform's discovered ceilings.** The context window
+  and output ceiling beside each model come from the KB — one correlated
+  `browse:agents-requested` exchange over the bus (the same request every
+  other Semiont client makes), read off the collaborator roster the Browser
+  enriches with what the inference clients discovered from each provider. The
+  launcher asks no provider directly for a ceiling. A shared input+output
+  window renders as one figure (`128K window`); distinct ceilings render as
+  `200K in / 64K out`, worded as the CollaborationPanel words them so one
+  model reads the same in the terminal and in the browser. Where the platform
+  publishes a ceiling for a remote model it REPLACES the context figure
+  `/v1/models` reported — one number, from one source; that probe keeps
+  rendering only what it alone knows. No stack, no session, an unreachable or
+  wedged backend (the request is bounded well under the bus client's 30 s
+  default), or an entry whose discovery failed: the row renders exactly as it
+  did before, no ceiling and no error. And a ceiling appears only where the
+  record can say which provider serves THAT model — a row whose driver says
+  `ollama` listing a model Ollama does not serve gets nothing, the same
+  per-model-not-per-row rule that keeps a Claude from being checked against
+  Ollama. A wrong ceiling would be worse than a missing one.
+- KB-root discovery matches the npm CLI (`SEMIONT_ROOT`, analogous to
+  `GIT_DIR`): the override is strict (invalid values error, never fall back),
+  else the root is found by walking up from cwd for `.semiont/`. git is not
+  part of discovery — the must-be-a-git-clone invariant applies only where
+  `/kb` is mounted (full start, `--service backend`); sidecars need only the
+  `.semiont/` tree. `semiont status` reports the root(s) in its LOCAL ROOTS
+  section.
+- The launcher remembers every root a real start used in `roots.json` (beside
+  `stack.json`; entries survive stops, vanished paths are flagged not
+  dropped). `semiont start --root <path|name>` selects a root explicitly — a
+  directory, or the basename of a registered root — winning over
+  `SEMIONT_ROOT` and cwd discovery; the LOCAL ROOTS status section lists
+  the registry with last-used annotations.
+- **`--config` is sticky per KB**: a successful start with an explicit
+  `--config` records the name on the root's `roots.json` entry, and later
+  starts without the flag use it (banner says `Config: anthropic (recorded
+  from last start; override with --config)`; status shows it under SEMIONT
+  ROOTS). An explicit flag always wins and re-records; failed starts and
+  `--dry-run` record nothing, so a typo'd name never becomes the default.
+  The preference is per-user-per-machine — which config you run depends on
+  your API keys, so it lives in the XDG registry, never in the KB repo.
+- **`--runtime` is sticky machine-wide** (a top-level `runtime` field in
+  `roots.json` — stacks are singleton-per-machine, so unlike `--config` the
+  preference isn't per-KB): an explicit `--runtime` on a successful start is
+  recorded; later bare starts use it (`Container runtime: docker (recorded
+  from last start; override with --runtime)`). Selection is three-tiered — a
+  live stack's `stack.json` record always wins (rejoin what exists), then the
+  recorded preference, then auto-detect (`container` → `docker` → `podman`).
+  Ambiguous auto-detect names the alternatives (`auto-detected; also on
+  PATH: docker`); implicit picks record nothing; a preference naming a
+  runtime that's no longer on PATH warns and falls back to auto-detect —
+  only an explicit flag naming a missing runtime is an error.
+- `start` records what it believes the stack IS — the runtime, and each
+  service's container name, runtime-reported ID, and image — in `stack.json`
+  in the launcher's state home (`~/Library/Application Support/semiont` on
+  macOS, `$XDG_STATE_HOME/semiont` on Linux). `stop` and `status` compute
+  their work from those identifiers: they target the recorded runtime by ID
+  (no more blind every-runtime name sweep), skip a host-reused Ollama, and a
+  full `stop` forgets the record. No record (older launcher, another
+  machine's stack) falls back to the historical name sweep; the record is
+  belief — `status` still verifies every claim against the runtime.
+- `start`, `stop`, and `status` take `--service <name>` to act on one service
+  (named by role: backend, worker, smelter, weaver, browser,
+  database, graph, vectors, inference, embedding, traces — the concrete products PostgreSQL,
+  Neo4j, Qdrant, Ollama, and Jaeger appear as detail alongside). A `--service` start rejoins the running stack's
+  worker secret automatically (recovered from a running container's env via
+  the runtime's inspect), auto-enables OTel iff Jaeger is up, and stages a
+  fresh private config copy; a `--service` stop leaves the staged configs in
+  place (the rest of the stack still mounts them); a `--service` status exits
+  0/1 on that service alone.
+- `SEMIONT_VERSION` selects the service image tag (default `latest`; the
+  sentinel `local` uses locally-built `:local` images and skips pulls).
+
+### Login and upload
+
+`semiont login --email <address>` authenticates against a running stack's
+backend and stores the session token — never the password, which is read
+from stdin only (prompted echo-off on a terminal; `echo "$PW" | semiont
+login …` for scripts) — per stack in the launcher state home, mode 0600.
+`semiont yield --upload <file>` then registers files as KB resources.
+Files must live under the KB root (storage URIs are repo-relative; the
+content belongs in the repo) — and commit the `.semiont/events/` files an
+upload creates: they ARE the documents. Both verbs speak to the backend
+through `packages/sdk-go`, the Go client generated from the same OpenAPI
+authority as the TypeScript SDK's types.
+Both take `--repo <owner/name>` to target a codespace stack through its
+forward instead of the local one.
+
+Sessions maintain themselves: access tokens are short-lived, and on a 401 the
+launcher renews one invisibly from the stored refresh token
+(announced, saved, retried once) — login is a rare event, not a routine
+chore. `semiont logout` ends a session (best-effort server-side,
+local token forgotten either way, said plainly when the server half
+didn't complete), and `semiont status --verbose` lists every stored
+session under SESSIONS, live-verified against the stack when reachable —
+valid / expired / unverified, never a guess.
+
+### Driving a participant's Browser
+
+`semiont browse <resourceId> --browser` opens that resource on the
+PARTICIPANT's screen instead of printing it here — the same act as a plain
+`browse`, with a different audience, which is why it is a flag and not a
+second verb. It emits `browse:resource-open`, a domain signal the viewer
+resolves into its own route; the launcher never learns a URL. `--browser`
+refuses to combine with `--json`, `--annotations` or `--entity-types`, since
+each of those names a local rendering and the pair would state two
+destinations at once.
+
+`semiont browse --annotation <id> --browser` opens **one annotation** the same
+way (`browse:click`): the viewer selects that entry in its annotations panel
+and scrolls to it. Where a `beckon` only *points*, this *opens* — the two are
+distinct moves, not synonyms.
+
+That form takes **no resourceId**, and rejects one rather than ignoring it. An
+annotation id names exactly one annotation on exactly one resource, so the id
+is the whole address; the wire carries nothing else. Accepting a resourceId
+the launcher never sends would hand the caller a second id to keep consistent
+for no benefit — and since verifying the pair would need a read this signal
+deliberately does not perform, a mismatched pair could only be echoed back as
+a lie.
+
+`--annotation` (open one, remotely) sits beside `--annotations` (list them
+here). They are one keystroke apart and mean opposite things, so they refuse
+each other with a message that says so.
+
+Every emit now reports how many subscribers the backend's target subject had
+**at dispatch**, and the verbs say so plainly:
+
+```
+✓ Opened res-42 in the Browser (2 subscribers — broadcast, so still no confirmation anyone looked)
+✓ Opened annotation ann-9 in the Browser (2 subscribers — broadcast, so still no confirmation anyone looked)
+✓ Beckoned toward res-42 (ann-9) — nothing is subscribed to beckon:focus, so no one received it
+```
+
+That number is deliberately not called delivery: a subscriber is a connection,
+not a pair of eyes, and these channels have no reply. But zero subscribers is a
+fact worth saying out loud — `/bus/subscribe` enforces no channel allowlist and
+the backend publishes unconditionally, so before this an emit into an empty
+room returned a clean ✓.
+
+`beckon` exits 0 into an empty room — a beckon is genuinely fire-and-forget,
+and an empty room is a fact, not a failure. **`browse --browser` does not,** in
+either form. It asked for a specific outcome, something on a participant's
+screen, and zero subscribers means that did not happen; a tour script running
+under `set -e` should stop rather than narrate on. So it probes the Browser and
+says which of three things is true:
+
+```
+✗ Nobody saw res-42 — nothing is subscribed to browse:resource-open.
+  The Browser is running, but no web browser is watching it.
+  Open http://localhost:3000, log in, then run this again.
+```
+
+```
+✗ Nobody saw res-42 — nothing is subscribed to browse:resource-open.
+  No Browser is running on this machine.
+  Start it:  semiont browse res-42 --browser --launch
+  or:        semiont start --service browser
+```
+
+The two failures are independent — the Browser is the Browser *container*,
+and what has to be watching it is a human's *web browser* — so the messages
+keep those words distinct. A container that exists but is not answering gets
+its own third sentence rather than being flattened into either.
+
+The annotation form reports the same three ways, naming what it sent and the
+command that retries *it*: `Nobody saw annotation ann-9 — nothing is subscribed
+to browse:click`, with `semiont browse --annotation ann-9 --browser --launch`.
+A retry line that named the wrong form would be worse than none.
+
+`--launch` starts the Browser when none is running, through the same
+`start --service browser` that pulls, publishes the port and waits for health.
+It starts a *container*: it cannot open a window or log anyone in, so it still
+reports that nobody is watching. Starting one is never implicit — a read verb's
+flag does not get to bring a container up as a side effect.
+
+The launcher names an **origin** and never a path. `http://localhost:3000` is
+its own fact — it publishes that port and records the endpoint — while
+`/know/resource/<id>` belongs to the Browser, and mirroring a route here would
+break silently the day the route moves. `--browser-url` overrides the recorded
+origin (precedence: flag → record → `http://localhost:3000`).
+
+### Watching a KB
+
+`semiont listen` streams the KB's live events. `--json` is line-delimited and
+unchanged — scripts parse it — while the default rendering is meant to be READ:
+
+```
+  14:03:12 ● alice@example.com joined  — 1 connection watching
+  14:03:20 browse:resource-viewed      resource="The Iliad, Book I"
+  14:07:41 ○ alice@example.com left    — 0 connections watching
+```
+
+Resource names come from ONE lookup at startup, not one per event: a lookup is
+a correlated request, which opens its own connection, and every connection
+publishes presence — so resolving inline would generate the churn the console
+is trying to report. Ids the prefetch misses render as ids; nothing blocks and
+nothing blanks. Presence is counted by CONNECTION, not by person: one human
+with two tabs is two connections, and a count keyed on identity would report
+one viewer for two and none when the duplicate closed.
+
+The stream is inbound only, and says so on startup — your own `beckon` and
+`browse --browser` cues are not echoed back, so silence where a cue should
+appear is not evidence the cue failed.
+
+### Where state lives
+
+Local-stack databases persist across restarts. Each local semiont root gets
+its own directory under the launcher's data home — `~/Library/Application
+Support/semiont/roots/<key>` on macOS, `$XDG_DATA_HOME/semiont/roots/<key>`
+(default `~/.local/share/...`) on Linux — keyed by the KB's did:web when
+`.semiont/config` declares one (identity travels with the KB, so a moved
+clone keeps its state), else by a hash of the root path. `start`
+bind-mounts each store's subdir into its container: PostgreSQL rows —
+including users, which the event log does **not** record — survive `stop`
+and restart. A `meta.json` stamp records which image wrote each store; a
+start whose config names a *different* database image over existing data
+refuses with a fix-it line rather than risk it (Postgres data is never
+auto-deleted). The backend applies its schema with `prisma migrate deploy`,
+which only applies not-yet-applied migrations — a populated database
+no-ops on restart.
+
+Qdrant (`qdrant/`) and Neo4j (`neo4j/`) state persists the same way, with
+the opposite mismatch rule: they are *projections* of the event log, so a
+start whose config names a different image announces it is clearing the
+stale store and lets the normal rebuild repopulate it — freshness by
+rebuild, never a refusal. (The Neo4j subdirs are host-side mode 777: its
+entrypoint refuses to boot unless its `test -w` gate passes, and Apple
+container's virtiofs won't let it chown a mount root.)
+
+`semiont clean` is the one way this state dies: it removes the current
+root's state directory (`--store database|vectors|graph` scopes to one
+store; `--dry-run` shows what would go, with sizes; `--root <path|name|key>`
+targets another root — a literal key is how you remove *orphaned* state
+whose KB directory no longer exists). It refuses while a recorded stack is
+using the state — stop first. `stop` itself never touches state; stopping
+and restarting is exactly the round trip persistence exists for.
+
+## Development
+
+Build and test (hermetically — no Go on the host required):
+
+```sh
+container run --rm -v "$(pwd)":/work -w /work/apps/launcher golang:1.25 \
+  sh -c "go vet ./... && go test ./..."
+```
+
+The tests in `launcher_test.go` are the executable spec: golden files under
+`testdata/golden/` pin the exact runtime argv sequences per scenario, and a
+fake-runtime binary (`internal/fakert`) impersonates
+container/docker/podman/git/lsof/ps on a private PATH — tests never touch a
+real runtime. If a behavior change is intended, adjudicate deliberately
+(the goldens are the spec), then refresh them with
+`go test -run <Test> . -update-goldens`.
+
+The suite refuses to run when `/tmp/semiont-config.*` exists (a live stack may
+be mounting those staged configs, and the launcher's preflight sweeps them) —
+stop the stack first, or run the tests in a container.
+
+## Releasing
+
+`launcher-release.yml` runs goreleaser on every `vX.Y.Z` tag: GitHub Release
+archives with SBOMs and provenance attestation, plus the Homebrew formula
+pushed to `The-AI-Alliance/homebrew-semiont` (needs the `TAP_GITHUB_TOKEN`
+secret). No code signing anywhere — brew-installed binaries carry no
+quarantine attribute, and channels that would require a signing entity
+(macOS .pkg, winget) are deliberately unoffered.

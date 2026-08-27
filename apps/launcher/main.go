@@ -1,0 +1,116 @@
+// semiont — host-installed launcher for a local Semiont stack.
+//
+// Drives the container runtime CLI (Apple `container`, docker, or podman)
+// directly via subprocesses; see .plans/GO-LAUNCHER.md in the monorepo for
+// the design and the fleet forensics this port preserves.
+package main
+
+import (
+	"fmt"
+	"os"
+	"strings"
+
+	"github.com/The-AI-Alliance/semiont/apps/launcher/internal/launcher"
+)
+
+func usage(w *os.File) {
+	fmt.Fprint(w, `Usage: semiont <command> [options]
+
+Local Semiont stack launcher — drives your container runtime
+(Apple container, Docker, or Podman) directly.
+
+Commands:
+  init      Birth a new KB here: permanent identity, git repo, registration
+  start     Start the local Semiont stack
+  useradd   Create or update a user in the running stack
+  login     Authenticate against a running stack (token stored, never the password)
+  logout    End the stored session (server best-effort, local token forgotten)
+  yield     Upload files from the KB root as resources (needs login)
+  browse    Read the KB: resources, annotations, entity types (needs login)
+  gather    Assemble LLM context for a resource or annotation (needs login)
+  mark      Annotate a resource; --delete removes an annotation (needs login)
+  bind      Resolve a linking annotation to its target resource (needs login)
+  match     Find resources an annotation could bind to (needs login)
+  beckon    Draw attention to a resource or annotation (needs login)
+  frame     Add entity types to the KB's schema vocabulary (needs login)
+  listen    Follow the KB's live event stream (needs login)
+  secret    Register where config secrets come from (pointers, never values)
+  status    Report container state and application health per service
+  logs      Follow the running stack's service logs
+  stop      Stop the stack across all installed runtimes
+  clean     Remove a root's persistent stack state (PostgreSQL/Qdrant/Neo4j)
+  about     What Semiont is, project links, and detected runtimes
+  version   Print the launcher version
+
+Run 'semiont <command> --help' for command options.
+`)
+}
+
+func main() {
+	logExit := launcher.LogInvocation(os.Args[1:])
+	if len(os.Args) < 2 {
+		usage(os.Stderr)
+		logExit(1)
+		os.Exit(1)
+	}
+	cmd, rest := os.Args[1], os.Args[2:]
+	code := 0
+	switch cmd {
+	case "init":
+		code = launcher.Init(rest)
+	case "start":
+		code = launcher.Start(rest)
+	case "useradd":
+		code = launcher.Useradd(rest)
+	case "login":
+		code = launcher.Login(rest)
+	case "logout":
+		code = launcher.Logout(rest)
+	case "yield":
+		code = launcher.Yield(rest)
+	case "browse":
+		code = launcher.Browse(rest)
+	case "gather":
+		code = launcher.Gather(rest)
+	case "mark":
+		code = launcher.Mark(rest)
+	case "bind":
+		code = launcher.Bind(rest)
+	case "match":
+		code = launcher.Match(rest)
+	case "beckon":
+		code = launcher.Beckon(rest)
+	case "frame":
+		code = launcher.Frame(rest)
+	case "listen":
+		code = launcher.Listen(rest)
+	case "secret":
+		code = launcher.Secret(rest)
+	case "status":
+		code = launcher.Status(rest)
+	case "logs":
+		code = launcher.Logs(rest)
+	case "stop":
+		code = launcher.Stop(rest)
+	case "clean":
+		code = launcher.Clean(rest)
+	case "about":
+		code = launcher.About(rest)
+	case "version", "--version":
+		code = launcher.Version(rest)
+	case "--help", "-h", "help":
+		usage(os.Stdout)
+	default:
+		fmt.Fprintf(os.Stderr, "Unknown command: %s\n", cmd)
+		// The old KB scripts took flags directly; the launcher needs the
+		// subcommand first. Catch that muscle memory with a pointed hint.
+		if strings.HasPrefix(cmd, "-") {
+			fmt.Fprintf(os.Stderr, "Flags go after a subcommand — did you mean:  semiont start %s\n", strings.Join(os.Args[1:], " "))
+		}
+		fmt.Fprintln(os.Stderr)
+		usage(os.Stderr)
+		code = 1
+	}
+	logExit(code)
+	os.Exit(code)
+}

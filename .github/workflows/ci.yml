@@ -1,0 +1,386 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  test-browser:
+    name: Browser Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7.0.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: 'package-lock.json'
+
+      - name: Build packages
+        run: |
+          npm ci --include=optional
+          npm run build:packages
+
+      - name: Run browser type check
+        run: |
+          echo "Running browser TypeScript type check..."
+          cd apps/browser
+          npm run typecheck
+        env:
+          CI: true
+          NODE_OPTIONS: "--max-old-space-size=4096"
+
+      - name: Run browser tests
+        run: |
+          echo "Running browser unit tests..."
+          cd apps/browser
+          npm test
+        env:
+          CI: true
+          NODE_OPTIONS: "--max-old-space-size=4096"
+
+  test-backend:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: testpassword
+          POSTGRES_USER: testuser
+          POSTGRES_DB: testdb
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7.0.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: 'package-lock.json'
+
+      - name: Cache TypeScript incremental build info
+        uses: actions/cache@v6.1.0
+        with:
+          path: apps/backend/.tscache
+          key: ${{ runner.os }}-backend-tsc-${{ hashFiles('apps/backend/src/**/*.ts', 'apps/backend/tsconfig.json', 'packages/*/src/**/*.ts') }}
+          restore-keys: |
+            ${{ runner.os }}-backend-tsc-
+
+      - name: Install dependencies
+        run: |
+          npm ci --include=optional
+          npm run build:packages
+
+      - name: Generate Prisma Client
+        run: |
+          echo "Generating Prisma client for backend..."
+          cd apps/backend
+          npx prisma generate
+        env:
+          CI: true
+
+      - name: Run backend type check
+        run: |
+          echo "Running backend TypeScript type check..."
+          cd apps/backend
+          npm run typecheck
+        env:
+          CI: true
+          NODE_OPTIONS: "--max-old-space-size=8192"
+
+      - name: Run backend unit tests
+        run: |
+          echo "Running backend unit tests..."
+          cd apps/backend
+          npm test
+        env:
+          CI: true
+          DATABASE_URL: postgresql://testuser:testpassword@localhost:5432/testdb
+          JWT_SECRET: test-secret-key-for-testing-32char
+          GOOGLE_CLIENT_ID: test-client-id
+          GOOGLE_CLIENT_SECRET: test-client-secret
+          SITE_DOMAIN: test.semiont.com
+
+      - name: Run backend integration tests
+        run: |
+          echo "Running backend integration tests..."
+          cd apps/backend
+          npm run test:integration
+        env:
+          CI: true
+          DATABASE_URL: postgresql://testuser:testpassword@localhost:5432/testdb
+          JWT_SECRET: test-secret-key-for-testing-32char
+          GOOGLE_CLIENT_ID: test-client-id
+          GOOGLE_CLIENT_SECRET: test-client-secret
+          SITE_DOMAIN: test.semiont.com
+
+  test-comprehensive:
+    name: Comprehensive Test Suite
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: testpassword
+          POSTGRES_USER: testuser
+          POSTGRES_DB: testdb
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7.0.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: 'package-lock.json'
+
+      - name: Install dependencies
+        run: |
+          npm ci --include=optional
+          npm run build:packages
+
+      - name: Generate Prisma Client
+        run: |
+          echo "Generating Prisma client for backend..."
+          cd apps/backend
+          npx prisma generate
+        env:
+          CI: true
+
+      - name: Run comprehensive test suite
+        run: |
+          echo "Running comprehensive test suite..."
+          # Run tests for each package
+          cd apps/browser && npm test && cd ../..
+          cd apps/backend && npm test && npm run test:integration && cd ../..
+
+          echo "All tests completed successfully"
+        env:
+          CI: true
+          NODE_OPTIONS: "--max-old-space-size=4096"
+          # Backend environment variables
+          DATABASE_URL: postgresql://testuser:testpassword@localhost:5432/testdb
+          JWT_SECRET: test-secret-key-for-testing-32char
+          GOOGLE_CLIENT_ID: test-client-id
+          GOOGLE_CLIENT_SECRET: test-client-secret
+          SITE_DOMAIN: test.semiont.com
+          
+
+  validate-config:
+    name: Configuration Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7.0.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: 'package-lock.json'
+
+      - name: Install dependencies
+        run: |
+          npm ci --include=optional
+          npm run build:packages
+
+  check-phantom-deps:
+    name: Phantom Dependency Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7.0.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: 'package-lock.json'
+
+      - name: Build packages
+        run: |
+          npm ci --include=optional
+          npm run build:packages
+
+      - name: Verify every published dist import is declared
+        run: node scripts/ci/check-dist-imports.mjs
+
+  build-all:
+    name: Build All Applications
+    runs-on: ubuntu-latest
+    needs: [test-browser, test-backend]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7.0.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: 'package-lock.json'
+
+      - name: Install dependencies
+        run: |
+          npm ci --include=optional
+          npm run build:packages
+
+      - name: Build all applications
+        run: |
+          # Build all workspaces
+          npm run build
+          echo "All applications built successfully"
+        env:
+          CI: true
+          NODE_OPTIONS: "--max-old-space-size=4096"
+          # Backend environment variables for build
+          DATABASE_URL: postgresql://testuser:testpassword@localhost:5432/testdb
+          JWT_SECRET: test-secret-key-for-testing-32char
+          GOOGLE_CLIENT_ID: test-client-id
+          GOOGLE_CLIENT_SECRET: test-client-secret
+          SITE_DOMAIN: test.semiont.com
+
+  # Generated code is committed (so consumers and CI never need the
+  # generators), which means it can go stale the moment its authority changes.
+  # scripts/ci/local-build.sh has these gates too, but that script does NOT run
+  # in CI — without this job, nothing checks generated artifacts on a PR.
+  generated-artifacts:
+    name: Generated Artifacts (drift)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7.0.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      - name: Setup Go
+        uses: actions/setup-go@v7.0.0
+        with:
+          go-version-file: apps/launcher/go.mod
+
+      # Authority: specs/src/bus/registry.json → TypeScript (packages/core)
+      # and Go (packages/sdk-go/bus). Either language drifting means the two
+      # sides can disagree about channels at runtime.
+      - name: Bus registry vs generated code
+        run: |
+          node scripts/bus/generate-ts.mjs --check
+          node scripts/bus/generate-go.mjs --check
+
+      # specs/openapi.json is a BUILD ARTIFACT (gitignored) — redocly bundles
+      # it from specs/src/. A fresh checkout has no such file, so the client
+      # check has to produce it first. Version pinned to the repo's devDependency:
+      # an unpinned bundler would make a deterministic gate nondeterministic.
+      - name: Bundle the OpenAPI spec
+        run: npx --yes @redocly/cli@2.34.0 bundle specs/src/openapi.json -o specs/openapi.json
+
+      # Authority: specs/openapi.json → packages/sdk-go/client_gen.go.
+      # Deterministic because the generator version is pinned.
+      - name: OpenAPI spec vs generated Go client
+        run: |
+          go run github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.6.0 \
+            -generate types,client,skip-prune -package semiont \
+            -o /tmp/client_gen.check.go specs/openapi.json
+          if ! diff -q /tmp/client_gen.check.go packages/sdk-go/client_gen.go; then
+            echo "::error::packages/sdk-go/client_gen.go is stale — run: cd packages/sdk-go && go generate ./..."
+            exit 1
+          fi
+          echo "sdk-go client matches the spec"
+
+      # The drift check above is SELF-CONSISTENT: same command both sides, so
+      # a generation command that drops schemas passes it forever. This is the
+      # independent oracle — spec says N schemas, Go must have N. (It was the
+      # absence of this check that let ~150 pruned schemas sit unnoticed.)
+      - name: Generated Go client covers every schema
+        run: node scripts/ci/check-go-schema-coverage.mjs
+
+  test-launcher:
+    name: Launcher Tests (Go)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7.0.1
+
+      - name: Setup Go
+        uses: actions/setup-go@v7.0.0
+        with:
+          go-version-file: apps/launcher/go.mod
+
+      # gofmt REPORTS on stdout and exits 0 even when files are unformatted —
+      # `gofmt -l . && next` therefore never gates anything. Test the output,
+      # or drift lives for weeks (launcher_test.go did exactly that).
+      - name: Check formatting (gofmt)
+        run: |
+          unformatted=$(gofmt -l apps/launcher packages/sdk-go)
+          if [ -n "$unformatted" ]; then
+            echo "::error::These files are not gofmt-clean:"
+            echo "$unformatted"
+            exit 1
+          fi
+          echo "gofmt clean"
+
+      - name: Vet launcher
+        run: cd apps/launcher && go vet ./...
+
+      # An EXPLICIT budget. These tests drive a fake runtime through real
+      # start/stop lifecycles, so the suite is minutes long and serial; it had
+      # been running at 594-612s against Go's undeclared 600s default, and the
+      # first batch of new tests to cross that line failed as a "timeout" with
+      # no bad code anywhere. A budget you never declared is not a budget.
+      - name: Test launcher
+        run: cd apps/launcher && go test -timeout 30m ./...
+
+      # packages/sdk-go is a separate module (the generated API client + bus
+      # registry the launcher consumes via a replace directive) — it needs its
+      # own vet/build, or a broken generated file only surfaces downstream.
+      # `go test` too: the bus client's wire-contract tests (subscribe before
+      # emit, correlation, failure channels) and the bridged-set invariants
+      # live here, and a build-only step never ran a single one of them.
+      - name: Vet, build and test sdk-go
+        run: cd packages/sdk-go && go vet ./... && go build ./... && go test -timeout 5m ./...
+
+      # The launcher's deps are go-toml and packages/sdk-go (whose client
+      # pulls oapi-codegen/runtime), plus the Go stdlib compiled into the
+      # shipped binary (distributed via Homebrew). govulncheck scans stdlib +
+      # deps and reports only vulns reachable from our code.
+      - name: Vulnerability scan launcher (govulncheck)
+        run: |
+          go install golang.org/x/vuln/cmd/govulncheck@latest
+          cd apps/launcher && govulncheck ./...
