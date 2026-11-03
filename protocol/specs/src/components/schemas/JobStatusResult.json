@@ -1,0 +1,12 @@
+{
+  "type": "object",
+  "description": "Result of a job status request",
+  "properties": {
+    "response": {
+      "$ref": "./JobStatusResponse.json"
+    }
+  },
+  "required": [
+    "response"
+  ]
+}

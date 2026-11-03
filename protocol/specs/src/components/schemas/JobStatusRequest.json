@@ -1,0 +1,12 @@
+{
+  "type": "object",
+  "description": "Request to check the status of a job",
+  "properties": {
+    "jobId": {
+      "$ref": "./JobId.json"
+    }
+  },
+  "required": [
+    "jobId"
+  ]
+}

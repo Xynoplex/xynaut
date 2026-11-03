@@ -1,0 +1,16 @@
+{
+  "type": "object",
+  "description": "Raw annotation creation intent — bus handler assembles the W3C annotation",
+  "properties": {
+    "resourceId": {
+      "$ref": "./ResourceId.json"
+    },
+    "request": {
+      "$ref": "CreateAnnotationRequest.json"
+    }
+  },
+  "required": [
+    "resourceId",
+    "request"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "type": "string",
+  "enum": [
+    "assessing",
+    "commenting",
+    "highlighting",
+    "linking",
+    "tagging"
+  ],
+  "description": "Semiont-supported W3C Web Annotation motivations - https://www.w3.org/TR/annotation-vocab/#motivation"
+}

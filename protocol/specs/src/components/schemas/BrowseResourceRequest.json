@@ -1,0 +1,12 @@
+{
+  "type": "object",
+  "description": "Request to browse a single resource",
+  "properties": {
+    "resourceId": {
+      "$ref": "./ResourceId.json"
+    }
+  },
+  "required": [
+    "resourceId"
+  ]
+}

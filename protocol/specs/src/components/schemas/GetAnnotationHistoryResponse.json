@@ -1,0 +1,24 @@
+{
+  "type": "object",
+  "properties": {
+    "events": {
+      "type": "array",
+      "items": { "$ref": "AttributedEvent.json" }
+    },
+    "total": {
+      "type": "number"
+    },
+    "annotationId": {
+      "$ref": "./AnnotationId.json"
+    },
+    "resourceId": {
+      "$ref": "./ResourceId.json"
+    }
+  },
+  "required": [
+    "events",
+    "total",
+    "annotationId",
+    "resourceId"
+  ]
+}

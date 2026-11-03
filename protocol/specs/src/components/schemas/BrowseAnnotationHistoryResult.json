@@ -1,0 +1,12 @@
+{
+  "type": "object",
+  "description": "Result of browsing annotation history",
+  "properties": {
+    "response": {
+      "$ref": "./GetAnnotationHistoryResponse.json"
+    }
+  },
+  "required": [
+    "response"
+  ]
+}

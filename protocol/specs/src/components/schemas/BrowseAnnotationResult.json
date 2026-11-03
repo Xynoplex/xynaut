@@ -1,0 +1,12 @@
+{
+  "type": "object",
+  "description": "Result of browsing a single annotation",
+  "properties": {
+    "response": {
+      "$ref": "./GetAnnotationResponse.json"
+    }
+  },
+  "required": [
+    "response"
+  ]
+}

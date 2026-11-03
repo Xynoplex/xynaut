@@ -1,0 +1,15 @@
+{
+  "type": "object",
+  "description": "Emitted when an annotation is hovered over for beckoning",
+  "properties": {
+    "annotationId": {
+      "nullable": true,
+      "allOf": [
+        {
+          "$ref": "./AnnotationId.json"
+        }
+      ]
+    }
+  },
+  "required": ["annotationId"]
+}
