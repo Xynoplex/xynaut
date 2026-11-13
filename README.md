@@ -31,6 +31,15 @@ fact explains a good deal of what follows, including how services stay alive.
 
 ## Install
 
+On macOS or Linux with Homebrew:
+
+```sh
+brew install xynoplex/xynaut/xynaut
+```
+
+Homebrew builds Xynaut from a pinned source snapshot and installs Go as a build
+dependency.
+
 Install the latest tagged CLI with Go:
 
 ```sh
