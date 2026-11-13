@@ -1,0 +1,10 @@
+{
+  "type": "object",
+  "description": "Emitted when a sparkle effect is triggered on an annotation",
+  "properties": {
+    "annotationId": {
+      "$ref": "./AnnotationId.json"
+    }
+  },
+  "required": ["annotationId"]
+}

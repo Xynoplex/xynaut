@@ -1,0 +1,20 @@
+{
+  "type": "object",
+  "description": "Request to browse a directory listing",
+  "properties": {
+    "path": {
+      "type": "string"
+    },
+    "sort": {
+      "type": "string",
+      "enum": [
+        "name",
+        "mtime",
+        "annotationCount"
+      ]
+    }
+  },
+  "required": [
+    "path"
+  ]
+}

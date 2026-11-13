@@ -1,0 +1,54 @@
+# GoReleaser config for Xynoplex's xynaut CLI.
+#
+# Channels, deliberately minimal: GitHub Release archives (darwin/linux/
+# windows × arm64/amd64, static), Linux packages, checksums, and SBOMs.
+# Windows gets a zip holding xynaut.exe; under WSL2 it runs the Linux build.
+version: 2
+
+project_name: xynaut
+
+builds:
+  - id: xynaut
+    binary: xynaut
+    main: ./cmd/xynaut
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+      - linux
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+      - -X github.com/Xynoplex/xynaut/internal/launcher.BuildVersion={{.Version}}
+      - -X github.com/Xynoplex/xynaut/internal/launcher.BuildCommit={{.ShortCommit}}
+      - -X github.com/Xynoplex/xynaut/internal/launcher.BuildDate={{.Date}}
+    mod_timestamp: "{{ .CommitTimestamp }}"
+
+archives:
+  - id: default
+    formats: [tar.gz]
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    name_template: "xynaut_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+
+checksum:
+  name_template: checksums.txt
+
+sboms:
+  - artifacts: archive
+
+nfpms:
+  - id: linux-packages
+    package_name: xynaut
+    vendor: Xynoplex
+    homepage: https://github.com/Xynoplex/xynaut
+    maintainer: Xynoplex
+    description: "Host CLI for managing local Semiont stacks"
+    license: Apache-2.0
+    formats: [deb, rpm]
+    dependencies: [git]
+    builds: [xynaut]

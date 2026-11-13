@@ -1,0 +1,103 @@
+name: Publish Desktop App
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: write
+
+jobs:
+  # The app and the Linux package are built in containers, which need nested
+  # virtualization, and GitHub's arm64 macOS runners support none; the macOS
+  # runner only makes the disk image.
+  assemble:
+    runs-on: ubuntu-latest
+    env:
+      CONTAINER_RUNTIME: docker
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - name: Assemble the macOS app
+        run: make desktop-macos-app
+
+      - name: Build Linux x64 package
+        run: make desktop-linux
+
+      # An artifact keeps neither symbolic links nor file modes, and the app's
+      # frameworks need both. The tar goes to the runner's temp directory: the
+      # container's copy leaves apps/desktop/release owned by root.
+      - name: Pack the macOS app
+        run: tar -cf "$RUNNER_TEMP/mac-arm64.tar" -C apps/desktop/release mac-arm64
+
+      - name: Upload the macOS app
+        uses: actions/upload-artifact@v7
+        with:
+          name: desktop-macos-arm64-app
+          path: ${{ runner.temp }}/mac-arm64.tar
+          if-no-files-found: error
+
+      - name: Upload Linux package
+        uses: actions/upload-artifact@v7
+        with:
+          name: desktop-linux-x64
+          path: apps/desktop/release/*.deb
+          if-no-files-found: error
+
+  dmg:
+    needs: assemble
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - name: Download the macOS app
+        uses: actions/download-artifact@v8
+        with:
+          name: desktop-macos-arm64-app
+          path: ${{ runner.temp }}
+
+      - name: Unpack the macOS app
+        run: mkdir -p apps/desktop/release && tar -xf "$RUNNER_TEMP/mac-arm64.tar" -C apps/desktop/release
+
+      - name: Make the disk image
+        run: make desktop-macos-dmg
+
+      - name: Upload macOS installer
+        uses: actions/upload-artifact@v7
+        with:
+          name: desktop-macos-arm64
+          path: apps/desktop/release/*.dmg
+          if-no-files-found: error
+
+  attach:
+    needs: [assemble, dmg]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - name: Read version
+        id: version
+        run: echo "version=$(jq -r .version version.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Download installer
+        uses: actions/download-artifact@v8
+        with:
+          name: desktop-macos-arm64
+          path: artifacts/macos
+
+      - name: Download Linux package
+        uses: actions/download-artifact@v8
+        with:
+          name: desktop-linux-x64
+          path: artifacts/linux
+
+      - name: Attach to GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="v${{ steps.version.outputs.version }}"
+          echo "Attaching Semiont Desktop to release $TAG..."
+          find artifacts -type f \( -name '*.dmg' -o -name '*.deb' \) | while read f; do
+            echo "  Uploading $(basename "$f")..."
+            gh release upload "$TAG" "$f" --clobber
+          done
