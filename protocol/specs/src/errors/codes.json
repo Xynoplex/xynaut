@@ -171,7 +171,7 @@
     ]
   },
   "control": {
-    "docs": "Why a request of the launcher's control API (`semiont control`, protocol/contract/LAUNCHER-CONTROL.md) failed. The launcher sends one in each error's data, and Desktop reads it. A knowledge base never sends one.",
+    "docs": "Why a request of the launcher's control API (`xynaut control`, protocol/contract/LAUNCHER-CONTROL.md) failed. The launcher sends one in each error's data, and Desktop reads it. A knowledge base never sends one.",
     "codes": [
       { "code": "control.invalid-params", "docs": "The request's params are not what its method's schema admits. The error's fields name each fault; JSON-RPC's own invalid-params code (-32602) carries it." },
       { "code": "control.unsupported-api-version", "docs": "The request is written to a version of the control API this launcher does not speak. The error's supported field names the ones it does." },
@@ -185,7 +185,7 @@
       { "code": "control.root-not-registered", "docs": "The root the request names is not in the registry." },
       { "code": "control.stack-not-running", "docs": "The request needs a stack of its target recorded on this machine, and none is." },
       { "code": "control.stack-running", "docs": "The request would change what a recorded stack depends on: stop the stack first." },
-      { "code": "control.start-in-progress", "docs": "Another semiont start of the same knowledge base holds its start lock." },
+      { "code": "control.start-in-progress", "docs": "Another xynaut start of the same knowledge base holds its start lock." },
       { "code": "control.runtime-unavailable", "docs": "No container runtime the request can use is on the launcher's PATH." },
       { "code": "control.dependency-unavailable", "docs": "A program the request needs besides a container runtime (gh, for a codespace) is not on the launcher's PATH." },
       { "code": "control.unreachable", "docs": "What the request needs to reach did not answer: the knowledge base, its issuer, or a codespace's forward." },

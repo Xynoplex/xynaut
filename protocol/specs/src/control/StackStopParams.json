@@ -1,7 +1,7 @@
 {
   "title": "StackStopParams",
   "type": "object",
-  "description": "stack.stop's params: what semiont stop takes, but its help.",
+  "description": "stack.stop's params: what xynaut stop takes, but its help.",
   "properties": {
     "apiVersion": {
       "$ref": "./ApiVersion.json",

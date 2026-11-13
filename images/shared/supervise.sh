@@ -7,7 +7,7 @@
 # three runtimes the same behavior: a crashed child restarts, a hung child is
 # probed and killed, a deterministic boot refusal fails fast instead of
 # looping, a child that keeps dying soon after it starts is said to be
-# crash-looping and waits longer each time, and `semiont stop` (TERM) is
+# crash-looping and waits longer each time, and `xynaut stop` (TERM) is
 # forwarded and never fought.
 #
 # TWO KINDS OF SHORT LIFE. A child that exits within RAPID_SECS of its start

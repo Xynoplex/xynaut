@@ -1,7 +1,7 @@
 # discovery — the launcher's KB discovery contract
 
 One standalone contract: the schema for `<stateDir>/discovery/kbs.json`,
-which the semiont launcher (Go, `apps/launcher`) regenerates on every stack
+which the xynaut (Go, `cmd/xynaut` and `internal/launcher`) regenerates on every stack
 mutation and consumers read from disk (Node) or fetch same-origin via the
 Browser's static server (web browsers).
 

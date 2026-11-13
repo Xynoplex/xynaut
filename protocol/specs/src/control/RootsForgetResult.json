@@ -13,7 +13,7 @@
     },
     "persistentState": {
       "type": "string",
-      "description": "The key whose persistent stack state remains, when some does and no surviving root shares its DID: semiont clean --root <key> removes it."
+      "description": "The key whose persistent stack state remains, when some does and no surviving root shares its DID: xynaut clean --root <key> removes it."
     }
   },
   "required": [

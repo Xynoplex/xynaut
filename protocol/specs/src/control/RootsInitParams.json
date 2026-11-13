@@ -1,7 +1,7 @@
 {
   "title": "RootsInitParams",
   "type": "object",
-  "description": "roots.init's params: the local directory, permanent identity, and optional configuration inputs semiont init takes.",
+  "description": "roots.init's params: the local directory, permanent identity, and optional configuration inputs xynaut init takes.",
   "properties": {
     "apiVersion": { "$ref": "./ApiVersion.json" },
     "path": { "type": "string", "description": "Existing local directory in which to create the knowledge base.", "minLength": 1 },

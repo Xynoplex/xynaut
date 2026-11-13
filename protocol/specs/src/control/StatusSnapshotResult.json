@@ -1,7 +1,7 @@
 {
   "title": "StatusSnapshotResult",
   "type": "object",
-  "description": "What semiont status reports: each knowledge base with its own services, and each service the knowledge bases share, once, with the knowledge bases it serves.",
+  "description": "What xynaut status reports: each knowledge base with its own services, and each service the knowledge bases share, once, with the knowledge bases it serves.",
   "properties": {
     "knowledgeBases": {
       "type": "array",

@@ -1995,7 +1995,7 @@
     },
     {
       "module": "signInStore",
-      "docs": "The sign-ins `semiont login` keeps, as protocol/specs/src/sign-in-store states them: the store, whose every change holds the lock every writer takes, and where the launcher's state home is on each system. Held by sign-in-store/cases.json.",
+      "docs": "The sign-ins `xynaut login` keeps, as protocol/specs/src/sign-in-store states them: the store, whose every change holds the lock every writer takes, and where the launcher's state home is on each system. Held by sign-in-store/cases.json.",
       "where": {
         "csharp": ["packages/csharp/sdk/src/Semiont/SignIn"],
         "swift": [
@@ -2099,7 +2099,7 @@
       "notYetReached": {
         "ocaml": "OCaml keeps a sign-in only in the launcher's store (Sign_in_store), with OAuth's device grant beside it: it is to have a SignInKept a session holds and renews wherever it is kept, a MemorySignIn, and signInDevice, sessionFromKept, renewKept and signOut over one."
       },
-      "docs": "A sign-in a session holds and renews wherever it is kept (a registry's storage, through the registry's keptIn; the sign-ins `semiont login` keeps; memory; a host's own), and what a script does with one: signs a person in to it by the device grant, opens a session over it, renews it at the issuer, and signs out of it. A session opened over one asks the gateway who its token is unless it is told not to (`validate`, true when it is left out). Its client keeps for the person the kept sign-in names from the start, whether or not it asks (protocol/specs/src/session/persisted-cases.json, `startup`); asking is how it learns the person when the sign-in names nobody yet, and a session that does not ask then keeps for nobody. docs/builder/SIGN-IN.md says which to use when.",
+      "docs": "A sign-in a session holds and renews wherever it is kept (a registry's storage, through the registry's keptIn; the sign-ins `xynaut login` keeps; memory; a host's own), and what a script does with one: signs a person in to it by the device grant, opens a session over it, renews it at the issuer, and signs out of it. A session opened over one asks the gateway who its token is unless it is told not to (`validate`, true when it is left out). Its client keeps for the person the kept sign-in names from the start, whether or not it asks (protocol/specs/src/session/persisted-cases.json, `startup`); asking is how it learns the person when the sign-in names nobody yet, and a session that does not ask then keeps for nobody. docs/builder/SIGN-IN.md says which to use when.",
       "where": {
         "typescript": [
           "packages/typescript/sdk/src/session/sign-in-kept.ts",

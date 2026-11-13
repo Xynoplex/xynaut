@@ -10,12 +10,12 @@
     "python": ["packages/python/sdk/tests/test_identity.py"],
     "go": ["packages/go/sdk/identity_test.go"],
     "archivist": ["images/archivist/record/src/kb.rs"],
-    "launcher": ["packages/go/launcher/kbidentity_agreement_test.go", "packages/go/launcher/staging_test.go"],
+    "launcher": ["internal/launcher/kbidentity_agreement_test.go", "internal/launcher/staging_test.go"],
     "kotlin": ["packages/kotlin/sdk/src/test/kotlin/semiont/identity/IdentityTest.kt"]
   },
   "cases": [
     {
-      "why": "the shape semiont init writes",
+      "why": "the shape xynaut init writes",
       "dir": "arxiv-kb",
       "config": "project:\n  name: \"ArXiv Research Papers\"\n\ngit:\n  sync: true\n\nsite:\n  # Permanent did:web identity for everything this KB mints.\n  domain: \"the-ai-alliance.github.io:semiont-arxiv-kb\"\n  siteName: \"ArXiv Research Papers\"\n",
       "refused": false,

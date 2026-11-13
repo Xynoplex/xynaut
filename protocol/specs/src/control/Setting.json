@@ -1,11 +1,11 @@
 {
   "title": "Setting",
   "type": "object",
-  "description": "One setting the launcher keeps, as semiont settings shows it.",
+  "description": "One setting the launcher keeps, as xynaut settings shows it.",
   "properties": {
     "name": {
       "type": "string",
-      "description": "Its name, as semiont settings takes it."
+      "description": "Its name, as xynaut settings takes it."
     },
     "default": {
       "type": "boolean",
@@ -24,7 +24,7 @@
       "items": {
         "$ref": "./SettingLine.json"
       },
-      "description": "The values in effect, one per line semiont settings shows."
+      "description": "The values in effect, one per line xynaut settings shows."
     },
     "settable": {
       "type": "boolean",

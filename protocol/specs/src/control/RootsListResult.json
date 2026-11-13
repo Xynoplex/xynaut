@@ -1,7 +1,7 @@
 {
   "title": "RootsListResult",
   "type": "object",
-  "description": "Every knowledge base this machine knows, as semiont roots lists them: the local roots first, then the codespace stacks.",
+  "description": "Every knowledge base this machine knows, as xynaut roots lists them: the local roots first, then the codespace stacks.",
   "properties": {
     "roots": {
       "type": "array",
@@ -15,7 +15,7 @@
       "items": {
         "type": "string"
       },
-      "description": "What semiont roots warns of without failing: an invalid SEMIONT_ROOT, a clone whose project file is refused."
+      "description": "What xynaut roots warns of without failing: an invalid SEMIONT_ROOT, a clone whose project file is refused."
     }
   },
   "required": [

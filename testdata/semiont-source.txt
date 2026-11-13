@@ -1,0 +1,10 @@
+Semiont source revision: ddd58cb4673e06a022955d9041f261fb816a849f
+
+The xynaut source was extracted from this published monorepo revision. The
+protocol specifications, service image recipes, image tag script, service
+publication workflow, and Desktop Control API schema in this repository are
+reference fixtures from that revision. They are not xynaut's build or release
+workflows. Update them deliberately when the Semiont contracts change.
+
+The Semiont Go SDK remains an external dependency pinned in go.mod; the SDK
+source is not copied into this repository.

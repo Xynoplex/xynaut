@@ -2,12 +2,12 @@
   "$comment": "Which database of a graph store holds a knowledge base's graph, as whatever names it must name it. A knowledge base's graph is in the database named `kb-` and then the first 60 of the 64 hexadecimal digits, in lower case, of the SHA-256 of the knowledge base's DID, which is `did:web:` and its domain (protocol/specs/src/kb-identity/cases.json), taken of the DID's UTF-8 bytes: the digits its vector index's collections' names begin with (protocol/specs/src/vectors/payload-cases.json). So the graphs of two knowledge bases on one server are in two databases, and nobody can make two DIDs whose databases meet. The DID is hashed and not written into the name: Neo4j takes a database's name of 3 to 63 characters, beginning with a letter, of the letters, the digits, `.` and `-`, and a DID holds `:`, may hold `%` and characters outside ASCII, and may be longer than that. The name begins `kb-` because it must begin with a letter, and it keeps 60 digits because 63 characters is the longest a name may be; the 240 bits they keep are more than any two knowledge bases need to stay apart. Neo4j reads a name without regard to case, and these are in lower case already. Each case is a knowledge base's DID (`kb`) and the `database` its graph is in. WHO RUNS WHAT. The launcher names the database: in the Weaver's document and the Librarian's (`Neo4jGraphConfig.database`), and to a Neo4j it runs, which makes the database when it first starts, as its one database. A Neo4j somebody else runs must already hold it. The Weaver and the Librarian are told the name, and work nothing out. Add a case here before changing an implementation.",
   "runBy": {
     "launcher": [
-      "packages/go/launcher/weaverdoc_test.go"
+      "internal/launcher/weaverdoc_test.go"
     ]
   },
   "cases": [
     {
-      "why": "a knowledge base of the shape semiont init writes: its graph is in the database named by the hash of its DID",
+      "why": "a knowledge base of the shape xynaut init writes: its graph is in the database named by the hash of its DID",
       "kb": "did:web:the-ai-alliance.github.io:semiont-arxiv-kb",
       "database": "kb-dab801537d2dd1939a1e75fd6ec796cf0240a9f57cd12b655e21a6c675f2"
     },

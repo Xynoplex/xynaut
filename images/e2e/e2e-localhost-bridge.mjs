@@ -11,7 +11,7 @@
  * the bridge address, 10000 above. The gateway's port is the knowledge
  * base's own (a second one here has the next port block), so it is the port
  * E2E_GATEWAY_URL names. The launcher's suite holds this map to the
- * launcher's own (`packages/go/launcher/exposure_test.go`).
+ * launcher's own (`internal/launcher/exposure_test.go`).
  *
  * A stopgap: the container cannot reach the host as localhost.
  */

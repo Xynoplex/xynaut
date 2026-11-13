@@ -1,5 +1,5 @@
 {
-  "$comment": "Every option of the launcher commands the control API covers, and what it is in the API: the params field or fields it becomes (`fields`, each `<method>.<field path>`), the method it selects (`method`), or why it has none (`cliOnly`). `parser` names the Go function in packages/go/launcher whose switch reads the command's options; TestControlCLICensus holds each command's options there to this table both ways, holds each field to its method's params schema, and holds the options a control request is turned into to the fields they map. A new or changed option fails the census until its row here says what it is. `positionals` are the command's operands, which no switch reads by name.",
+  "$comment": "Every option of the launcher commands the control API covers, and what it is in the API: the params field or fields it becomes (`fields`, each `<method>.<field path>`), the method it selects (`method`), or why it has none (`cliOnly`). `parser` names the Go function in internal/launcher whose switch reads the command's options; TestControlCLICensus holds each command's options there to this table both ways, holds each field to its method's params schema, and holds the options a control request is turned into to the fields they map. A new or changed option fails the census until its row here says what it is. `positionals` are the command's operands, which no switch reads by name.",
   "commands": {
     "about": {
       "parser": "About",
@@ -35,7 +35,7 @@
         "--runtime": {"fields": ["status.snapshot.runtime"]},
         "--service": {"cliOnly": "narrows the report to one service; a snapshot reports every service, and a client picks the one it shows"},
         "--refresh": {"cliOnly": "re-reads a codespace's identity over ssh: a repair, not a read"},
-        "--verbose": {"cliOnly": "presentation: a snapshot always carries each knowledge base's session; the launcher's paths are settings.path's and semiont status --verbose's"},
+        "--verbose": {"cliOnly": "presentation: a snapshot always carries each knowledge base's session; the launcher's paths are settings.path's and xynaut status --verbose's"},
         "-v": {"cliOnly": "presentation: as --verbose"},
         "--billing": {"cliOnly": "GitHub's monthly bill per repository, which no client of this API shows"},
         "--help": {"cliOnly": "help text, for a person"},
@@ -122,7 +122,7 @@
       "positionals": [
         {"name": "<name>", "fields": ["settings.get.name", "settings.set.name", "settings.unset.name", "settings.path.document"]},
         {"name": "<value>", "fields": ["settings.set.value"]},
-        {"name": "secret", "cliOnly": "the secret sources: semiont settings secret set reads a value's pointer at the terminal, and no client of this API edits them"}
+        {"name": "secret", "cliOnly": "the secret sources: xynaut settings secret set reads a value's pointer at the terminal, and no client of this API edits them"}
       ],
       "flags": {
         "--root": {"fields": ["settings.list.root", "settings.get.root", "settings.set.root", "settings.unset.root"]},

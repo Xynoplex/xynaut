@@ -9,7 +9,7 @@
     },
     "name": {
       "type": "string",
-      "description": "The setting, as semiont settings names it.",
+      "description": "The setting, as xynaut settings names it.",
       "minLength": 1
     },
     "default": {

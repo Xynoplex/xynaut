@@ -1,7 +1,7 @@
 {
   "title": "StackStartParams",
   "type": "object",
-  "description": "stack.start's params: what semiont start takes, but its help and its narration switches.",
+  "description": "stack.start's params: what xynaut start takes, but its help and its narration switches.",
   "properties": {
     "apiVersion": {
       "$ref": "./ApiVersion.json",

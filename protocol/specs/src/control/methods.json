@@ -1,5 +1,5 @@
 {
-  "$comment": "The control API's methods and notifications: what `semiont control` serves, over JSON-RPC 2.0, one message per line on stdin and stdout. Each method names the schema of its params and of its result; each notification, the schema of its params. packages/codegen/schemas/generate-control.mjs generates the launcher's Go types and Desktop's TypeScript types from this table and the schemas it names, and the schemas themselves for both sides to validate against. protocol/contract/LAUNCHER-CONTROL.md is the contract's prose. `errorData`: the schema of a failed request's error data. `exclusive`: the request waits for every other exclusive request to end, and holds the others off until it does. `sends`: the notifications a request of the method may send besides notifications/progress, which any may.",
+  "$comment": "The control API's methods and notifications: what `xynaut control` serves, over JSON-RPC 2.0, one message per line on stdin and stdout. Each method names the schema of its params and of its result; each notification, the schema of its params. packages/codegen/schemas/generate-control.mjs generates the launcher's Go types and Desktop's TypeScript types from this table and the schemas it names, and the schemas themselves for both sides to validate against. protocol/contract/LAUNCHER-CONTROL.md is the contract's prose. `errorData`: the schema of a failed request's error data. `exclusive`: the request waits for every other exclusive request to end, and holds the others off until it does. `sends`: the notifications a request of the method may send besides notifications/progress, which any may.",
   "apiVersion": "./ApiVersion.json",
   "errorData": "./ErrorData.json",
   "methods": [
@@ -17,7 +17,7 @@
       "result": "./RootsListResult.json",
       "exclusive": true,
       "sends": [],
-      "docs": "Every knowledge base this machine knows: semiont roots."
+      "docs": "Every knowledge base this machine knows: xynaut roots."
     },
     {
       "name": "roots.init",
@@ -25,7 +25,7 @@
       "result": "./RootsInitResult.json",
       "exclusive": true,
       "sends": ["notifications/progress"],
-      "docs": "Create and register a new local knowledge base: semiont init."
+      "docs": "Create and register a new local knowledge base: xynaut init."
     },
     {
       "name": "roots.forget",
@@ -33,7 +33,7 @@
       "result": "./RootsForgetResult.json",
       "exclusive": true,
       "sends": [],
-      "docs": "Remove one registry row, and no file: semiont forget."
+      "docs": "Remove one registry row, and no file: xynaut forget."
     },
     {
       "name": "status.snapshot",
@@ -41,7 +41,7 @@
       "result": "./StatusSnapshotResult.json",
       "exclusive": true,
       "sends": [],
-      "docs": "Each knowledge base's stack, and the services they share: semiont status."
+      "docs": "Each knowledge base's stack, and the services they share: xynaut status."
     },
     {
       "name": "stack.start",
@@ -49,7 +49,7 @@
       "result": "./StackStartResult.json",
       "exclusive": true,
       "sends": [],
-      "docs": "Start a stack, or some of its services: semiont start."
+      "docs": "Start a stack, or some of its services: xynaut start."
     },
     {
       "name": "stack.stop",
@@ -57,7 +57,7 @@
       "result": "./StackStopResult.json",
       "exclusive": true,
       "sends": [],
-      "docs": "Stop a stack, or some of its services: semiont stop."
+      "docs": "Stop a stack, or some of its services: xynaut stop."
     },
     {
       "name": "auth.login",
@@ -65,7 +65,7 @@
       "result": "./AuthLoginResult.json",
       "exclusive": true,
       "sends": ["notifications/userAction"],
-      "docs": "Sign in at the issuer a stack's knowledge base trusts, by the device grant, and keep the session in the launcher's store: semiont login. Exclusive while it finds the stack; the wait for the person is not."
+      "docs": "Sign in at the issuer a stack's knowledge base trusts, by the device grant, and keep the session in the launcher's store: xynaut login. Exclusive while it finds the stack; the wait for the person is not."
     },
     {
       "name": "auth.logout",
@@ -73,7 +73,7 @@
       "result": "./AuthLogoutResult.json",
       "exclusive": true,
       "sends": [],
-      "docs": "End the launcher's session for a stack: semiont logout."
+      "docs": "End the launcher's session for a stack: xynaut logout."
     },
     {
       "name": "identity.useradd",
@@ -81,7 +81,7 @@
       "result": "./IdentityUseraddResult.json",
       "exclusive": true,
       "sends": [],
-      "docs": "Create an account in a local knowledge base's launcher-managed Keycloak realm: semiont useradd. A supplied password is secret request data and is never narrated or persisted; a generated password is returned once in the result."
+      "docs": "Create an account in a local knowledge base's launcher-managed Keycloak realm: xynaut useradd. A supplied password is secret request data and is never narrated or persisted; a generated password is returned once in the result."
     },
     {
       "name": "identity.users.list",
@@ -97,7 +97,7 @@
       "result": "./LogsFollowResult.json",
       "exclusive": true,
       "sends": ["notifications/log"],
-      "docs": "Follow a stack's service logs until the client cancels or every source ends: semiont logs. Exclusive while it finds the containers; the follow is not."
+      "docs": "Follow a stack's service logs until the client cancels or every source ends: xynaut logs. Exclusive while it finds the containers; the follow is not."
     },
     {
       "name": "settings.list",
@@ -105,7 +105,7 @@
       "result": "./SettingsListResult.json",
       "exclusive": true,
       "sends": [],
-      "docs": "Every setting the launcher keeps: semiont settings."
+      "docs": "Every setting the launcher keeps: xynaut settings."
     },
     {
       "name": "settings.get",
@@ -113,7 +113,7 @@
       "result": "./Setting.json",
       "exclusive": true,
       "sends": [],
-      "docs": "One setting: semiont settings <name>."
+      "docs": "One setting: xynaut settings <name>."
     },
     {
       "name": "settings.set",
@@ -121,7 +121,7 @@
       "result": "./Setting.json",
       "exclusive": true,
       "sends": [],
-      "docs": "Set a setting, checked as a start would check it: semiont settings <name> <value>."
+      "docs": "Set a setting, checked as a start would check it: xynaut settings <name> <value>."
     },
     {
       "name": "settings.unset",
@@ -129,7 +129,7 @@
       "result": "./Setting.json",
       "exclusive": true,
       "sends": [],
-      "docs": "Return a setting to its default: semiont settings <name> --unset."
+      "docs": "Return a setting to its default: xynaut settings <name> --unset."
     },
     {
       "name": "settings.path",
@@ -137,7 +137,7 @@
       "result": "./SettingsPathResult.json",
       "exclusive": true,
       "sends": [],
-      "docs": "Where a machine document is: semiont settings <document> --path."
+      "docs": "Where a machine document is: xynaut settings <document> --path."
     }
   ],
   "notifications": [

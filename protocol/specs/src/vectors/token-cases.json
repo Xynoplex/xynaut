@@ -5,8 +5,8 @@
       "protocol/conformance/smelter/kb-index.test.ts"
     ],
     "launcher": [
-      "apps/launcher/launcher_test.go",
-      "packages/go/launcher/vectorstokens_test.go"
+      "cmd/xynaut/launcher_test.go",
+      "internal/launcher/vectorstokens_test.go"
     ],
     "vectors-python": [
       "packages/python/vectors/tests/qdrant_live.py"
@@ -14,7 +14,7 @@
   },
   "cases": [
     {
-      "why": "a knowledge base of the shape semiont init writes: its Smelter may do anything, and its Librarian may read its three collections",
+      "why": "a knowledge base of the shape xynaut init writes: its Smelter may do anything, and its Librarian may read its three collections",
       "kb": "did:web:the-ai-alliance.github.io:semiont-arxiv-kb",
       "claims": {
         "smelter": {

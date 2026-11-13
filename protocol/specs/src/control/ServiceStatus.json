@@ -1,11 +1,11 @@
 {
   "title": "ServiceStatus",
   "type": "object",
-  "description": "One service, as semiont status reads it: where it runs, its state, and whether it answers. Nothing is reported that the launcher did not observe: an endpoint is named only when the stack's record or the descriptor names one, and a page to open only when the service answers.",
+  "description": "One service, as xynaut status reads it: where it runs, its state, and whether it answers. Nothing is reported that the launcher did not observe: an endpoint is named only when the stack's record or the descriptor names one, and a page to open only when the service answers.",
   "properties": {
     "role": {
       "type": "string",
-      "description": "The service, as semiont status names it."
+      "description": "The service, as xynaut status names it."
     },
     "group": {
       "$ref": "./ServiceGroup.json",

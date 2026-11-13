@@ -1,7 +1,7 @@
-# sign-in-store — the sign-ins `semiont login` keeps
+# sign-in-store — the sign-ins `xynaut login` keeps
 
-One standalone contract: `<stateDir>/tokens.json`, where the semiont launcher
-(Go, `apps/launcher`) keeps the session of each stack a person has signed in
+One standalone contract: `<stateDir>/tokens.json`, where the xynaut
+(Go, `cmd/xynaut`) keeps the session of each stack a person has signed in
 to, and where an application built on any Semiont SDK finds it. One sign-in
 serves the launcher's verbs and that application.
 

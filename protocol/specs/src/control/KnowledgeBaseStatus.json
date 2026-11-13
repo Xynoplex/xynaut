@@ -1,7 +1,7 @@
 {
   "title": "KnowledgeBaseStatus",
   "type": "object",
-  "description": "One knowledge base's stack as semiont status reads it: what it is, where it runs, and each of its own services. The services every knowledge base shares are reported once, in the snapshot's shared list.",
+  "description": "One knowledge base's stack as xynaut status reads it: what it is, where it runs, and each of its own services. The services every knowledge base shares are reported once, in the snapshot's shared list.",
   "properties": {
     "name": {
       "type": "string",
@@ -49,7 +49,7 @@
     },
     "secretStore": {
       "type": "string",
-      "description": "Where the values the launcher generates for it are kept, as semiont settings secret-store describes it."
+      "description": "Where the values the launcher generates for it are kept, as xynaut settings secret-store describes it."
     },
     "lan": {
       "type": "string",
@@ -57,7 +57,7 @@
     },
     "starting": {
       "type": "boolean",
-      "description": "Whether a semiont start of it holds its start lock: its services are not ready, whatever they report."
+      "description": "Whether a xynaut start of it holds its start lock: its services are not ready, whatever they report."
     },
     "session": {
       "$ref": "./Session.json"
