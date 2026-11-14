@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/harness"
+	"github.com/Xynoplex/cli/internal/launcher/harness"
 )
 
 // Two mechanisms share the word "secret".

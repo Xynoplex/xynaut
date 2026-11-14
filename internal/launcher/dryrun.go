@@ -3,7 +3,7 @@ package launcher
 import (
 	"strings"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/stack"
+	"github.com/Xynoplex/cli/internal/launcher/stack"
 )
 
 // renderCmd prints one runtime invocation the way a shell would take it,

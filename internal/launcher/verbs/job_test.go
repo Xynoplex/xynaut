@@ -12,7 +12,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/harness"
+	"github.com/Xynoplex/cli/internal/launcher/harness"
 
 	"github.com/The-AI-Alliance/semiont/packages/go/sdk/api"
 )

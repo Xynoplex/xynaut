@@ -16,7 +16,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/stack"
+	"github.com/Xynoplex/cli/internal/launcher/stack"
 )
 
 // stateHomeDocumentPath: where the state home keeps the document named file;

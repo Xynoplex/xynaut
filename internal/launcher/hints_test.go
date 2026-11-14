@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/harness"
+	"github.com/Xynoplex/cli/internal/launcher/harness"
 )
 
 // powershellKey: the PowerShell that ends in 32 random bytes as hex.

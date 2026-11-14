@@ -3,7 +3,7 @@ package launcher
 import (
 	"strings"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/provenance"
+	"github.com/Xynoplex/cli/internal/launcher/provenance"
 )
 
 // semiontWorkflow: the workflow of The-AI-Alliance/semiont that builds and

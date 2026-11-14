@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/images"
+	"github.com/Xynoplex/cli/internal/launcher/images"
 )
 
 // The launcher's health probe for one of Semiont's own services is a MIRROR

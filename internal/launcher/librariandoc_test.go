@@ -12,7 +12,7 @@ import (
 
 	"github.com/The-AI-Alliance/semiont/packages/go/sdk/api"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/stack"
+	"github.com/Xynoplex/cli/internal/launcher/stack"
 )
 
 // mixedActors: the ollama-gemma fixture with its matcher asking Anthropic's

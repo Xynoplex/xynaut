@@ -16,8 +16,8 @@ import (
 
 	"github.com/The-AI-Alliance/semiont/packages/go/sdk/api"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/harness"
-	"github.com/Xynoplex/xynaut/internal/launcher/stack"
+	"github.com/Xynoplex/cli/internal/launcher/harness"
+	"github.com/Xynoplex/cli/internal/launcher/stack"
 )
 
 // mustPlan derives st's plan as a start does: its worker, when it runs one,

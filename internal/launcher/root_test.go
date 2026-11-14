@@ -6,8 +6,8 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/harness"
-	"github.com/Xynoplex/xynaut/internal/launcher/stack"
+	"github.com/Xynoplex/cli/internal/launcher/harness"
+	"github.com/Xynoplex/cli/internal/launcher/stack"
 )
 
 // A moved KB re-registers its did at the new path; the old path's row is

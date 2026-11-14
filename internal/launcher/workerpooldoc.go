@@ -7,7 +7,7 @@ package launcher
 // (workerPlan); the worker that does them runs as this document says.
 
 import (
-	"github.com/Xynoplex/xynaut/internal/launcher/stack"
+	"github.com/Xynoplex/cli/internal/launcher/stack"
 	"github.com/The-AI-Alliance/semiont/packages/go/sdk/api"
 )
 

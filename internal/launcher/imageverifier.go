@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/provenance"
+	"github.com/Xynoplex/cli/internal/launcher/provenance"
 )
 
 // imageVerifier: what decides whether an image of Semiont's is a release's —

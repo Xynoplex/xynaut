@@ -13,8 +13,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/harness"
-	"github.com/Xynoplex/xynaut/internal/launcher/stack"
+	"github.com/Xynoplex/cli/internal/launcher/harness"
+	"github.com/Xynoplex/cli/internal/launcher/stack"
 )
 
 // It is kept in the state home, in stack/, beside the record of what runs.

@@ -15,7 +15,7 @@ import (
 	"path/filepath"
 	"slices"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/stack"
+	"github.com/Xynoplex/cli/internal/launcher/stack"
 )
 
 // indexCollectionWords: the words of a knowledge base's collections, as

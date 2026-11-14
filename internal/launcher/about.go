@@ -38,8 +38,8 @@ func About(args []string) int {
 		fmt.Printf("  %s %s\n", u.Bold(fmt.Sprintf("%-9s", label)), value)
 	}
 	row("Version", fmt.Sprintf("%s %s", BuildVersion, u.Dim(fmt.Sprintf("(commit %s, built %s)", BuildCommit, BuildDate))))
-	row("Source", "https://github.com/Xynoplex/xynaut")
-	row("Issues", "https://github.com/Xynoplex/xynaut/issues")
+	row("Source", "https://github.com/Xynoplex/cli")
+	row("Issues", "https://github.com/Xynoplex/cli/issues")
 	row("Images", imageRegistry+" "+u.Dim("(each knowledge base's documents name the tags it runs)"))
 	row("License", "Apache-2.0")
 	row("Runtimes", runtimes)

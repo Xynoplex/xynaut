@@ -9,7 +9,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/harness"
+	"github.com/Xynoplex/cli/internal/launcher/harness"
 )
 
 // A document whose temporary file cannot be written is refused, and none is

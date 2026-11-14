@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/harness"
+	"github.com/Xynoplex/cli/internal/launcher/harness"
 )
 
 // A store's stamp mismatch is resolved in preflight, and resolution must

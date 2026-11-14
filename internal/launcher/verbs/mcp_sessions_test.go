@@ -17,7 +17,7 @@ import (
 	"testing"
 	"time"
 
-	launcher "github.com/Xynoplex/xynaut/internal/launcher"
+	launcher "github.com/Xynoplex/cli/internal/launcher"
 
 	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
 	"github.com/The-AI-Alliance/semiont/packages/go/sdk/bus"

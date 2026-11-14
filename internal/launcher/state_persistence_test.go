@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/harness"
+	"github.com/Xynoplex/cli/internal/launcher/harness"
 )
 
 // The "state" store is the Archivist's host volume at /semiont-state. The

@@ -8,7 +8,7 @@ package launcher
 import (
 	"fmt"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/stack"
+	"github.com/Xynoplex/cli/internal/launcher/stack"
 )
 
 // browserDocument: the Browser's document as a command read it.

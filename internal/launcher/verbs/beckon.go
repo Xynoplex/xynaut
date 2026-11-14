@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"strings"
 
-	launcher "github.com/Xynoplex/xynaut/internal/launcher"
+	launcher "github.com/Xynoplex/cli/internal/launcher"
 
 	"github.com/The-AI-Alliance/semiont/packages/go/sdk/api"
 	"github.com/The-AI-Alliance/semiont/packages/go/sdk/bus"

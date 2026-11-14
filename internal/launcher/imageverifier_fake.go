@@ -2,7 +2,7 @@
 
 package launcher
 
-import "github.com/Xynoplex/xynaut/internal/launcher/provenance"
+import "github.com/Xynoplex/cli/internal/launcher/provenance"
 
 // imageVerifier, in a launcher built for the scenario suite (-tags
 // scenario): sigstore-go's checks over what Sigstore's test authority

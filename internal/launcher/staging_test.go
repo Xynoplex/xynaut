@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/harness"
+	"github.com/Xynoplex/cli/internal/launcher/harness"
 )
 
 // What keeps a stack's staged documents from other users is the directory

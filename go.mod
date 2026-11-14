@@ -1,4 +1,4 @@
-module github.com/Xynoplex/xynaut
+module github.com/Xynoplex/cli
 
 go 1.27.0
 

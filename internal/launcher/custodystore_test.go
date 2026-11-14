@@ -14,7 +14,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/harness"
+	"github.com/Xynoplex/cli/internal/launcher/harness"
 )
 
 // Every custody value is read, written and located through custodyStore, so a

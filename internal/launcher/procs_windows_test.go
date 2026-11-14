@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/harness"
+	"github.com/Xynoplex/cli/internal/launcher/harness"
 )
 
 // A port this process listens on is reported with this process as its holder.

@@ -8,7 +8,7 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/harness"
+	"github.com/Xynoplex/cli/internal/launcher/harness"
 )
 
 // The proxy passes the paths of the realms it serves and Keycloak's assets,

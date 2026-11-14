@@ -15,8 +15,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/harness"
-	"github.com/Xynoplex/xynaut/internal/launcher/stack"
+	"github.com/Xynoplex/cli/internal/launcher/harness"
+	"github.com/Xynoplex/cli/internal/launcher/stack"
 )
 
 // syncFixture readies `identity sync` against admin for the fixture knowledge

@@ -10,8 +10,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/harness"
-	"github.com/Xynoplex/xynaut/internal/launcher/stack"
+	"github.com/Xynoplex/cli/internal/launcher/harness"
+	"github.com/Xynoplex/cli/internal/launcher/stack"
 )
 
 // keepBlocks writes a registry of one row per path, each keeping the block

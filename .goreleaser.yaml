@@ -22,9 +22,9 @@ builds:
       - arm64
     ldflags:
       - -s -w
-      - -X github.com/Xynoplex/xynaut/internal/launcher.BuildVersion={{.Version}}
-      - -X github.com/Xynoplex/xynaut/internal/launcher.BuildCommit={{.ShortCommit}}
-      - -X github.com/Xynoplex/xynaut/internal/launcher.BuildDate={{.Date}}
+      - -X github.com/Xynoplex/cli/internal/launcher.BuildVersion={{.Version}}
+      - -X github.com/Xynoplex/cli/internal/launcher.BuildCommit={{.ShortCommit}}
+      - -X github.com/Xynoplex/cli/internal/launcher.BuildDate={{.Date}}
     mod_timestamp: "{{ .CommitTimestamp }}"
 
 archives:
@@ -45,7 +45,7 @@ nfpms:
   - id: linux-packages
     package_name: xynaut
     vendor: Xynoplex
-    homepage: https://github.com/Xynoplex/xynaut
+    homepage: https://github.com/Xynoplex/cli
     maintainer: Xynoplex
     description: "Host CLI for managing local Semiont stacks"
     license: Apache-2.0

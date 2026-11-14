@@ -17,7 +17,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/stack"
+	"github.com/Xynoplex/cli/internal/launcher/stack"
 )
 
 const defaultTemplateRepo = "https://github.com/The-AI-Alliance/semiont-template-kb"

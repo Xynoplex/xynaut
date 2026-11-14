@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/harness"
+	"github.com/Xynoplex/cli/internal/launcher/harness"
 )
 
 // declaredUser: the USER an image's Dockerfile switches to last — the uid its

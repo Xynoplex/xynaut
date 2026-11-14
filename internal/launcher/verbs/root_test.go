@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	launcher "github.com/Xynoplex/xynaut/internal/launcher"
-	"github.com/Xynoplex/xynaut/internal/launcher/harness"
+	launcher "github.com/Xynoplex/cli/internal/launcher"
+	"github.com/Xynoplex/cli/internal/launcher/harness"
 )
 
 // Every verb takes --root, the knowledge base whose stack it acts on. With two

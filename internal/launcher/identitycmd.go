@@ -15,7 +15,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/stack"
+	"github.com/Xynoplex/cli/internal/launcher/stack"
 )
 
 const identityUsage = `Usage: xynaut identity sync [--root <path>] [--config <name>]

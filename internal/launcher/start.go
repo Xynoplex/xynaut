@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/stack"
+	"github.com/Xynoplex/cli/internal/launcher/stack"
 )
 
 const imageRegistry = "ghcr.io/the-ai-alliance"

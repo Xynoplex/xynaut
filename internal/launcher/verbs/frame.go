@@ -13,7 +13,7 @@ import (
 	"os"
 	"strings"
 
-	launcher "github.com/Xynoplex/xynaut/internal/launcher"
+	launcher "github.com/Xynoplex/cli/internal/launcher"
 )
 
 const frameUsage = `Usage: xynaut frame --entity-type <name> [--entity-type <name> ...]

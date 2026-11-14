@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/harness"
+	"github.com/Xynoplex/cli/internal/launcher/harness"
 )
 
 // The health budget is WALL-CLOCK, not a count of attempts. A failing probe

@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	launcher "github.com/Xynoplex/xynaut/internal/launcher"
-	"github.com/Xynoplex/xynaut/internal/launcher/harness"
+	launcher "github.com/Xynoplex/cli/internal/launcher"
+	"github.com/Xynoplex/cli/internal/launcher/harness"
 
 	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
 	"github.com/The-AI-Alliance/semiont/packages/go/sdk/api"

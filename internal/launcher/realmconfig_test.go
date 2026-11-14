@@ -3,7 +3,7 @@ package launcher
 import (
 	"testing"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/harness"
+	"github.com/Xynoplex/cli/internal/launcher/harness"
 )
 
 // The documented first run is `xynaut start` then `xynaut useradd`. It

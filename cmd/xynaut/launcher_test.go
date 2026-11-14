@@ -45,7 +45,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/harness"
+	"github.com/Xynoplex/cli/internal/launcher/harness"
 
 	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
 	"github.com/The-AI-Alliance/semiont/packages/go/sdk/api"
@@ -68,7 +68,7 @@ var (
 // import path.
 var libraries = filepath.Join("..", "..", "internal", "launcher")
 
-const librariesImportPath = "github.com/Xynoplex/xynaut/internal/launcher"
+const librariesImportPath = "github.com/Xynoplex/cli/internal/launcher"
 
 // libraryTestdata: a file of the launcher libraries' testdata: the fixture
 // knowledge base (kb/) and the goldens (golden/).
@@ -12915,7 +12915,7 @@ func TestAbout(t *testing.T) {
 	mustContain(t, "stdout", stdout,
 		"Xynoplex's command-line tool",
 		"local Semiont stacks",
-		"https://github.com/Xynoplex/xynaut",
+		"https://github.com/Xynoplex/cli",
 		"ghcr.io/the-ai-alliance",
 		"Apache-2.0",
 		"container, docker",

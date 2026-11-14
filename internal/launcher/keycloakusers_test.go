@@ -11,7 +11,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/harness"
+	"github.com/Xynoplex/cli/internal/launcher/harness"
 )
 
 // The realm's ACCOUNT surface. `identitysync.go` reconciles clients,

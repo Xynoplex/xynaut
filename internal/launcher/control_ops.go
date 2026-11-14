@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/stack"
+	"github.com/Xynoplex/cli/internal/launcher/stack"
 	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
 )
 

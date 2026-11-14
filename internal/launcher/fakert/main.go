@@ -69,7 +69,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/images"
+	"github.com/Xynoplex/cli/internal/launcher/images"
 	"github.com/The-AI-Alliance/semiont/packages/go/sdk/api"
 	"github.com/The-AI-Alliance/semiont/packages/go/sdk/bus"
 )

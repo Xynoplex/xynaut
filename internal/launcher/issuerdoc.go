@@ -10,7 +10,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/stack"
+	"github.com/Xynoplex/cli/internal/launcher/stack"
 )
 
 // issuerDocumentPath: where the issuer's document is kept.

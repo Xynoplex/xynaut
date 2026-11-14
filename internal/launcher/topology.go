@@ -20,7 +20,7 @@ package launcher
 import (
 	"fmt"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/stack"
+	"github.com/Xynoplex/cli/internal/launcher/stack"
 )
 
 // placement: a start's documents and plan, and where it runs: what each

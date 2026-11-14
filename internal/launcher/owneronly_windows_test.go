@@ -11,7 +11,7 @@ import (
 
 	"golang.org/x/sys/windows"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/harness"
+	"github.com/Xynoplex/cli/internal/launcher/harness"
 
 	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
 )

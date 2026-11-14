@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/harness"
+	"github.com/Xynoplex/cli/internal/launcher/harness"
 )
 
 // A directory kept to its owner is closed to its group and to everyone else,

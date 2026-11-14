@@ -20,7 +20,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/harness"
+	"github.com/Xynoplex/cli/internal/launcher/harness"
 )
 
 // heldPort: a loopback port this test holds open until it ends.

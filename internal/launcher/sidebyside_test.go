@@ -15,7 +15,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/harness"
+	"github.com/Xynoplex/cli/internal/launcher/harness"
 )
 
 // kbNamed: a knowledge base root whose project file declares domain, by the

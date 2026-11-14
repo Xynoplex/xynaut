@@ -43,11 +43,11 @@ dependency.
 Install the latest tagged CLI with Go:
 
 ```sh
-go install github.com/Xynoplex/xynaut/cmd/xynaut@latest
+go install github.com/Xynoplex/cli/cmd/xynaut@latest
 ```
 
 Or download and unpack the archive for your OS and CPU architecture from
-the [GitHub Releases](https://github.com/Xynoplex/xynaut/releases).
+the [GitHub Releases](https://github.com/Xynoplex/cli/releases).
 Releases cover macOS, Linux and Windows, arm64 and amd64, with Linux `.deb`
 and `.rpm` packages.
 Windows archives hold `xynaut.exe` —

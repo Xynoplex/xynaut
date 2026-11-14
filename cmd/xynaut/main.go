@@ -9,8 +9,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/Xynoplex/xynaut/internal/launcher"
-	"github.com/Xynoplex/xynaut/internal/launcher/verbs"
+	"github.com/Xynoplex/cli/internal/launcher"
+	"github.com/Xynoplex/cli/internal/launcher/verbs"
 )
 
 func usage(w *os.File) {

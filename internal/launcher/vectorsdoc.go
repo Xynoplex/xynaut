@@ -6,7 +6,7 @@ package launcher
 // belongs to no knowledge base, so its document is one of the state home's
 // (statehomedoc.go).
 
-import "github.com/Xynoplex/xynaut/internal/launcher/stack"
+import "github.com/Xynoplex/cli/internal/launcher/stack"
 
 // sharedVectorStorePort: where the catalog publishes the machine's Qdrant.
 // A port block places a knowledge base's own Qdrant at 6333 and every tenth

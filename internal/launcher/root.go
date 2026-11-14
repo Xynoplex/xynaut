@@ -14,7 +14,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Xynoplex/xynaut/internal/launcher/stack"
+	"github.com/Xynoplex/cli/internal/launcher/stack"
 )
 
 // KB-root discovery: SEMIONT_ROOT is an explicit override analogous to
