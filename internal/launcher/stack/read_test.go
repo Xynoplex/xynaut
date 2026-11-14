@@ -5,6 +5,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"go.yaml.in/yaml/v3"
@@ -43,6 +44,13 @@ func readCases(t *testing.T) []stackCase {
 	return table.Cases
 }
 
+// protocol fixtures retain monorepo-relative source paths. In this extracted
+// repository, the CLI's source and fixtures are rooted at the repository root.
+func fixturePath(path string) string {
+	path = strings.TrimPrefix(filepath.ToSlash(path), "cli/")
+	return filepath.Join(repository, filepath.FromSlash(path))
+}
+
 // mergePatch: a JSON merge patch (RFC 7396) applied to target.
 func mergePatch(target, patch any) any {
 	fields, isObject := patch.(map[string]any)
@@ -72,7 +80,7 @@ func documentOf(t *testing.T, c stackCase) []byte {
 	if c.Document != nil {
 		return []byte(*c.Document)
 	}
-	text, err := os.ReadFile(filepath.Join(repository, filepath.FromSlash(c.Base)))
+	text, err := os.ReadFile(fixturePath(c.Base))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -162,7 +170,7 @@ spec:
 // Each document of the fixture knowledge base reads into its type, and a
 // refused one is refused with its file and kind.
 func TestTheFixtureDocumentsReadIntoTheirTypes(t *testing.T) {
-	semiont := filepath.Join(repository, "packages", "go", "launcher", "testdata", "kb", ".semiont")
+	semiont := fixturePath("internal/launcher/testdata/kb/.semiont")
 	stack := filepath.Join(semiont, "stack")
 
 	kb, err := Read[KnowledgeBase](filepath.Join(stack, "knowledge-base.yaml"), "KnowledgeBase")
@@ -179,7 +187,7 @@ func TestTheFixtureDocumentsReadIntoTheirTypes(t *testing.T) {
 	if index.Spec.KnowledgeBase != kb.Metadata.Name || index.Spec.Embedding.Chunking.ChunkSize != 512 || index.Spec.Librarian.Search.SemanticFloor != 0.6 {
 		t.Errorf("the KnowledgeIndex did not read into its type: %+v", index.Spec)
 	}
-	issuer, err := Read[Issuer](filepath.Join(repository, "packages", "go", "launcher", "testdata", IssuerFile), "Issuer")
+	issuer, err := Read[Issuer](fixturePath(filepath.Join("internal", "launcher", "testdata", IssuerFile)), "Issuer")
 	if err != nil {
 		t.Fatal(err)
 	}
