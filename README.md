@@ -1016,7 +1016,7 @@ existing knowledge base.
   for each to end, and exits.
 
 The rules are in
-[the Control API specification](https://github.com/The-AI-Alliance/semiont/blob/main/protocol/contract/LAUNCHER-CONTROL.md).
+[the Control API specification](https://github.com/Xynoplex/protocol/blob/main/contract/LAUNCHER-CONTROL.md).
 
 ### Memory ceilings
 

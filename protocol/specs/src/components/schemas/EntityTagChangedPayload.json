@@ -1,8 +1,0 @@
-{
-  "type": "object",
-  "description": "Payload for mark:entity-tag-added and mark:entity-tag-removed domain events",
-  "properties": {
-    "entityType": { "type": "string" }
-  },
-  "required": ["entityType"]
-}

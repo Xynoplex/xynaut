@@ -1,4 +1,0 @@
-{
-  "type": "object",
-  "description": "Payload for mark:unarchived domain event (empty payload)"
-}
