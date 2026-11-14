@@ -1,24 +1,24 @@
 # Xynaut
 
-A host-installed CLI that runs a local Semiont stack by driving your container
-runtime (Apple `container`, Docker, or Podman) directly: Semiont's seven
+A host-installed CLI that runs a local Xynoplex stack by driving your container
+runtime (Apple `container`, Docker, or Podman) directly: the platform's seven
 services (gateway, dispatcher, archivist, librarian, worker, smelter, weaver)
 and the Browser, and beside them Keycloak, PostgreSQL, NATS, Neo4j, Qdrant,
 the telemetry containers and, when a model runs locally, Ollama. The operator's
-[Semiont service catalog](https://github.com/The-AI-Alliance/semiont/blob/main/docs/operator/services/OVERVIEW.md) says what each is
+[service catalog](https://github.com/Xynoplex/images#images) says what each is
 for.
 
 ## What this is for
 
 The launcher is the **laptop path**: one command brings up a full stack on a
-machine with no scheduler running. It is not the only way to run Semiont, and
+machine with no scheduler running. It is not the only way to run Xynoplex, and
 it is not a dependency of the service images.
 
 The published images are standalone artifacts. They run against whatever
 PostgreSQL, Neo4j, Qdrant and inference you already have, under Kubernetes, ECS
-or Nomad, with no launcher involved — see
-[deployment guide](https://github.com/The-AI-Alliance/semiont/blob/main/docs/operator/administration/DEPLOYMENT.md) for the
-supported paths and the contract each one must satisfy.
+or Nomad, with no launcher involved — see the
+[Xynoplex protocol contracts](https://github.com/Xynoplex/protocol/tree/main/contract)
+for the interfaces each deployment must satisfy.
 
 What the launcher adds on top of `run` is the part those platforms leave to
 you: per-root state directories with ownership stamps and mismatch rules,
@@ -50,9 +50,7 @@ Or download and unpack the archive for your OS and CPU architecture from
 the [GitHub Releases](https://github.com/Xynoplex/cli/releases).
 Releases cover macOS, Linux and Windows, arm64 and amd64, with Linux `.deb`
 and `.rpm` packages.
-Windows archives hold `xynaut.exe` —
-see [Windows setup guide](https://github.com/The-AI-Alliance/semiont/blob/main/docs/operator/platforms/WINDOWS.md), which also
-covers running the Linux build inside WSL2. The binary is static: no language
+Windows archives hold `xynaut.exe`. The binary is static: no language
 runtime bleeds onto your host. Besides the launcher you need only `git` and
 one container runtime (`container`, `docker`, or `podman`) on PATH.
 
@@ -475,7 +473,7 @@ xynaut stop
   semiont-launcher` so the Browser can split managed from manual entries.
   Endpoints and identity only, never a secret. The schema authority is
   `protocol/specs/src/discovery/DiscoveryDocument.json`, and BOTH languages
-  generate from it — @semiont/core's types.ts via the OpenAPI pipeline, and
+  generate from it — @xynoplex/core's types.ts via the OpenAPI pipeline, and
   this launcher's `discovery_types_gen.go` via go-jsonschema (go:generate in
   discovery.go) — so schema drift is a compile error, not a convention. The
   Browser container mounts the directory read-only at `/discovery`, where the
@@ -487,7 +485,7 @@ xynaut stop
   ports the stack claimed (`ports` in `stack.json`), and `stop` polls them
   after teardown (runtimes release published ports asynchronously), then
   reports any survivor with its PID and process name — never kills it, since
-  after the sweeps a holder is provably not a Semiont container. `start`'s
+  after the sweeps a holder is provably not one of this launcher's containers. `start`'s
   preflight likewise name-sweeps its knowledge base's containers
   (`semiont-<kb>-*`) under every installed runtime, and refuses a port another
   knowledge base's running stack claims, naming it; so a held port at check
@@ -516,7 +514,7 @@ xynaut stop
   starts the messaging, the gateway and the archivist again before the
   index; with the stack up, it restarts the index alone. A group that reads no config
   (`telemetry`) starts from anywhere.
-- `xynaut about` shows what Semiont is, project links, the image registry,
+- `xynaut about` shows project information and links, the image registry,
   and which runtimes were detected on PATH.
 - Every invocation is logged (invoke + exit lines, with `--password` values
   redacted) to `launcher.log`, in the launcher's log directory
@@ -525,7 +523,7 @@ xynaut stop
   command.
 - **The launcher derives its work from the KB's documents in
   `.semiont/stack/`** — the files every service's configuration is written
-  from (see the [configuration guide](https://github.com/The-AI-Alliance/semiont/blob/main/docs/operator/administration/CONFIGURATION.md)), each held to its
+  from (see the [stack schemas](https://github.com/Xynoplex/protocol/tree/main/specs/src/stack)), each held to its
   schema in `protocol/specs/src/stack/` before anything launches. For each daemon a
   document describes (the graph, the vectors, the broker, the issuer's
   database) it states who runs it, one way or the other and never both
@@ -613,7 +611,7 @@ xynaut stop
   hold the inference credentials report what their clients discovered from
   each provider (the worker on `job:limits-requested`, the librarian on
   `gather:` and `match:limits-requested`), and status asks each of them over
-  the bus, the same requests every other Semiont client makes. The launcher
+  the bus, the same requests every other SDK client makes. The launcher
   asks no provider directly for a ceiling. A shared input+output
   window renders as one figure (`128K window`); distinct ceilings render as
   `200K in / 64K out`, worded as the CollaborationPanel words them so one
@@ -940,7 +938,7 @@ signed in, through the Go SDK. Setting it up is one line,
 claude mcp add xynaut -- xynaut mcp
 ```
 
-and [Connecting an AI application](https://github.com/The-AI-Alliance/semiont/blob/main/docs/builder/AI-APPLICATIONS.md) has
+and [Xynoplex Go SDK guide](https://github.com/Xynoplex/sdk/blob/main/go/sdk/README.md) has
 the other clients' form. What the server does that a verb does not:
 
 - **One session for each KB, held across calls.** The KBs are the recorded
@@ -1016,7 +1014,7 @@ existing knowledge base.
   for each to end, and exits.
 
 The rules are in
-[the Control API specification](https://github.com/The-AI-Alliance/semiont/blob/main/protocol/contract/LAUNCHER-CONTROL.md).
+[the Control API specification](https://github.com/Xynoplex/protocol/blob/main/contract/LAUNCHER-CONTROL.md).
 
 ### Memory ceilings
 
@@ -1027,7 +1025,7 @@ leave it unlimited inside its shared VM). A container a document describes
 runs at the `resources.limits.memory` that document states, which `xynaut
 init` writes from one table in the launcher; Ollama, the telemetry containers
 and the Browser run at that table's own
-([Configuration](https://github.com/The-AI-Alliance/semiont/blob/main/docs/operator/administration/CONFIGURATION.md#memory)).
+([stack schemas](https://github.com/Xynoplex/protocol/tree/main/specs/src/stack)).
 The gateway's capacity follows the ceiling it runs with, and the Smelter
 works on the PDFs at once its `pdfsAtOnce` states. The ceilings are visible in
 every `--dry-run` line.
@@ -1095,7 +1093,7 @@ clone of the same knowledge base. The daemon runs one way — `-js -sd /data` wi
 because both drivers use the store. `xynaut status` lists it as
 `messaging (NATS)`.
 
-Unlike the Semiont service processes, this is a stock third-party image, so it
+Unlike the Xynoplex service processes, this is a stock third-party image, so it
 is **outside the supervision census above**: nothing restarts it if it stops.
 On a broker outage the gateway keeps reading healthy and its emits fail until
 the broker returns; the recovery mechanism is to start the container again
@@ -1143,7 +1141,7 @@ every knowledge base's realm, which no event log records — survive `stop`
 and restart. A `meta.json` stamp records which image wrote each store; a
 start whose Issuer document names a *different* database image over existing data
 refuses with a fix-it line rather than risk it (Postgres data is never
-auto-deleted). Keycloak manages its own schema on first boot; Semiont applies
+auto-deleted). Keycloak manages its own schema on first boot; Xynoplex applies
 no migrations of its own, because the gateway keeps no database.
 
 A knowledge base's own Qdrant (`qdrant/`) and Neo4j (`neo4j/`) state
@@ -1210,8 +1208,8 @@ regenerates regardless.
 ## Development
 
 The CLI entry point is [`cmd/xynaut`](cmd/xynaut). Its implementation is in
-[`internal/launcher`](internal/launcher/README.md), and the Semiont SDK is an
-external Go module dependency.
+[`internal/launcher`](internal/launcher/README.md), and the Xynoplex Go SDK is an
+external module dependency.
 
 With Go 1.27.4 installed, build or run the suite from the repository root:
 
