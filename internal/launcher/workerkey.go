@@ -18,7 +18,7 @@ import (
 	"encoding/pem"
 	"path/filepath"
 
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
+	xynoplex "github.com/Xynoplex/sdk/go"
 )
 
 // custodyWorkerKey: the custody name of the shared worker key, an RSA
@@ -51,7 +51,7 @@ func registeredKeyOf(pub *rsa.PublicKey) (registeredKey, error) {
 	if err != nil {
 		return registeredKey{}, err
 	}
-	return registeredKey{public: base64.StdEncoding.EncodeToString(der), thumbprint: semiont.JWKThumbprint(pub)}, nil
+	return registeredKey{public: base64.StdEncoding.EncodeToString(der), thumbprint: xynoplex.JWKThumbprint(pub)}, nil
 }
 
 // workerKey: the shared worker key as the launcher hands it on — what the
@@ -94,7 +94,7 @@ func loadOrCreateWorkerKey(u *UI) (workerKey, bool) {
 		return workerKey{}, false
 	}
 	if kept != "" {
-		key, err := semiont.ParsePrivateKeyPEM(kept)
+		key, err := xynoplex.ParsePrivateKeyPEM(kept)
 		if err != nil {
 			u.Fail("The worker's key at %s cannot be read: %v", store.where(custodyWorkerKey), err)
 			return workerKey{}, false

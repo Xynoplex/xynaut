@@ -13,7 +13,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/bus"
+	"github.com/Xynoplex/sdk/go/bus"
 )
 
 func TestMCPAGenerationWithoutItsTitleOrStorageUriIsRefused(t *testing.T) {

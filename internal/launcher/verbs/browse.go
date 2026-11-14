@@ -15,9 +15,9 @@ import (
 
 	launcher "github.com/Xynoplex/cli/internal/launcher"
 
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/api"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/bus"
+	xynoplex "github.com/Xynoplex/sdk/go"
+	"github.com/Xynoplex/sdk/go/api"
+	"github.com/Xynoplex/sdk/go/bus"
 )
 
 const browseIDs = "xynaut browse [options] -- <resourceId>"
@@ -349,12 +349,12 @@ options:
 			return 1
 		}
 		fmt.Printf("  %s  %s\n", u.Bold(resource.Name), u.Dim(resource.Id.String()))
-		if entityTypes := semiont.ResourceEntityTypes(resource); len(entityTypes) > 0 {
+		if entityTypes := xynoplex.ResourceEntityTypes(resource); len(entityTypes) > 0 {
 			fmt.Printf("  %s\n", u.Dim("entity types: "+strings.Join(entityTypes, ", ")))
 		}
 		fmt.Printf("  %s\n", u.Dim(fmt.Sprintf("%d annotation(s)", len(list))))
 	default:
-		filters := semiont.ResourceFilters{Limit: limit}
+		filters := xynoplex.ResourceFilters{Limit: limit}
 		if entityType != "" {
 			filters.EntityType = &entityType
 		}
@@ -374,11 +374,11 @@ options:
 // the launcher's voice; ok=false means stop.
 func annotationsOf(u *launcher.UI, c *launcher.VerbClient, resourceID api.ResourceId) ([]api.Annotation, bool) {
 	list, err := c.Browse.Annotations(resourceID).Fresh(c.Context())
-	var refused *semiont.TransportError
+	var refused *xynoplex.TransportError
 	switch {
 	case err == nil:
 		return list, true
-	case errors.As(err, &refused) && refused.Code == semiont.TransportErrorCodeNotFound:
+	case errors.As(err, &refused) && refused.Code == xynoplex.TransportErrorCodeNotFound:
 		u.Fail("There is no resource %s in this knowledge base.", resourceID)
 		return nil, false
 	default:
@@ -486,7 +486,7 @@ func launchBrowser(u *launcher.UI, override string) (launcher.BrowserProbe, bool
 // unanswered, and a session the gateway refused and the issuer could not
 // renew points at login rather than leaving the user guessing.
 func busFail(u *launcher.UI, verb string, err error) int {
-	var failed *semiont.BusRequestError
+	var failed *xynoplex.BusRequestError
 	var rej *launcher.SessionRejected
 	switch {
 	case errors.As(err, &failed) && failed.Failure != nil:

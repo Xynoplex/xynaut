@@ -8,9 +8,9 @@ import (
 
 	"github.com/Xynoplex/cli/internal/launcher/harness"
 
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/bus"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/semionttest"
+	xynoplex "github.com/Xynoplex/sdk/go"
+	"github.com/Xynoplex/sdk/go/bus"
+	"github.com/Xynoplex/sdk/go/xynoplextest"
 )
 
 // `xynaut yield --delegate`, in process against the faulty transport: it
@@ -30,7 +30,7 @@ var (
 // delegated runs yield --delegate res-src with more args against fake, which
 // gathers res-src's context and creates job-1. Once the job is created, the
 // job's end is delivered. It gives the exit code and everything printed.
-func delegated(t *testing.T, fake *semionttest.FaultyTransport, end semiont.Frame, more ...string) (int, string) {
+func delegated(t *testing.T, fake *xynoplextest.FaultyTransport, end xynoplex.Frame, more ...string) (int, string) {
 	t.Helper()
 	fake.QueueReply(gathering, gatheredSource)
 	fake.QueueReply(creating, json.RawMessage(`{"jobId":"job-1"}`))
@@ -58,8 +58,8 @@ func delegated(t *testing.T, fake *semionttest.FaultyTransport, end semiont.Fram
 }
 
 // requestsOf is every request a verb sent on channel, in order.
-func requestsOf(fake *semionttest.FaultyTransport, channel bus.Channel) []semionttest.RequestLogEntry {
-	var on []semionttest.RequestLogEntry
+func requestsOf(fake *xynoplextest.FaultyTransport, channel bus.Channel) []xynoplextest.RequestLogEntry {
+	var on []xynoplextest.RequestLogEntry
 	for _, request := range fake.RequestLog() {
 		if request.Channel == channel {
 			on = append(on, request)
@@ -69,7 +69,7 @@ func requestsOf(fake *semionttest.FaultyTransport, channel bus.Channel) []semion
 }
 
 // jobEnd is a frame of job-1's lifecycle, a yield job's on res-src.
-func jobEnd(t *testing.T, channel bus.Channel, more map[string]any) semiont.Frame {
+func jobEnd(t *testing.T, channel bus.Channel, more map[string]any) xynoplex.Frame {
 	t.Helper()
 	payload := map[string]any{"resourceId": "res-src", "jobId": "job-1", "jobType": "yield"}
 	for name, value := range more {
@@ -79,7 +79,7 @@ func jobEnd(t *testing.T, channel bus.Channel, more map[string]any) semiont.Fram
 	if err != nil {
 		t.Fatal(err)
 	}
-	return semiont.Frame{Channel: channel, Payload: encoded}
+	return xynoplex.Frame{Channel: channel, Payload: encoded}
 }
 
 func TestYieldDelegateGathersCreatesAndFollowsItsJobInProcess(t *testing.T) {

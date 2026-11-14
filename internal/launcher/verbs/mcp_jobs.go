@@ -17,8 +17,8 @@ import (
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/api"
+	xynoplex "github.com/Xynoplex/sdk/go"
+	"github.com/Xynoplex/sdk/go/api"
 )
 
 // jobCancelWithin is how long a cancelled call waits for the queue to take
@@ -29,7 +29,7 @@ const jobCancelWithin = 10 * time.Second
 // A job that fails, or one whose call is cancelled, is the tool's error; a
 // cancelled call cancels its job, which the queue does cooperatively: a
 // running job stops when its worker does.
-func followDelegation[C any](ctx context.Context, call mcpCall, job *semiont.Delegation[C]) (C, error) {
+func followDelegation[C any](ctx context.Context, call mcpCall, job *xynoplex.Delegation[C]) (C, error) {
 	var done C
 	c := call.client()
 	following, stop := context.WithCancel(ctx)
@@ -39,7 +39,7 @@ func followDelegation[C any](ctx context.Context, call mcpCall, job *semiont.Del
 	var jobID api.JobId
 	for event, err := range job.Events(following) {
 		if err != nil {
-			var failed *semiont.JobError
+			var failed *xynoplex.JobError
 			switch {
 			case ctx.Err() != nil && !jobID.IsZero():
 				asked, cancelled := context.WithTimeout(context.WithoutCancel(ctx), jobCancelWithin)
@@ -55,16 +55,16 @@ func followDelegation[C any](ctx context.Context, call mcpCall, job *semiont.Del
 			return done, err
 		}
 		switch e := event.(type) {
-		case semiont.JobCreated:
+		case xynoplex.JobCreated:
 			jobID = e.Data.JobId
 			notify(fmt.Sprintf("Job %s created", jobID))
-		case semiont.JobProgressed:
+		case xynoplex.JobProgressed:
 			if text := progressText(e.Data.Message); text != "" {
 				notify(text)
 			}
-		case semiont.JobAttemptFailed:
+		case xynoplex.JobAttemptFailed:
 			notify(fmt.Sprintf("An attempt failed (%s); the queue is running the job again", e.Data.Error))
-		case semiont.JobCompleted[C]:
+		case xynoplex.JobCompleted[C]:
 			return e.Data, nil
 		}
 	}
@@ -96,8 +96,8 @@ func progressNotifier(ctx context.Context, call mcpCall) func(said string) {
 // was not given reveals nothing about it.
 func callersJob(ctx context.Context, call mcpCall, jobID api.JobId) (api.JobStatusResponse, error) {
 	status, err := call.client().Job.Status(ctx, jobID)
-	var failed *semiont.BusRequestError
-	if errors.As(err, &failed) && failed.Code == semiont.BusRequestErrorCodeNotFound {
+	var failed *xynoplex.BusRequestError
+	if errors.As(err, &failed) && failed.Code == xynoplex.BusRequestErrorCodeNotFound {
 		return status, unknownJob(jobID)
 	}
 	if err != nil {

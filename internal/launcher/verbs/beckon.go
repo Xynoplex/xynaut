@@ -12,8 +12,8 @@ import (
 
 	launcher "github.com/Xynoplex/cli/internal/launcher"
 
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/api"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/bus"
+	"github.com/Xynoplex/sdk/go/api"
+	"github.com/Xynoplex/sdk/go/bus"
 )
 
 const beckonIDs = "xynaut beckon [options] -- <resourceId> [<annotationId>]"

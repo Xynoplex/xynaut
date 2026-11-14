@@ -6,7 +6,7 @@ toolchain go1.27.4
 
 require (
 	github.com/ProtonMail/go-crypto v1.4.1 // indirect
-	github.com/The-AI-Alliance/semiont/packages/go/sdk v0.7.3-0.20261112223020-ddd58cb4673e
+	github.com/Xynoplex/sdk/go v0.0.0-20261114034741-268d90d4142c
 	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 // indirect
 	github.com/cenkalti/backoff/v5 v5.0.3 // indirect

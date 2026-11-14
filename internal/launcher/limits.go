@@ -23,9 +23,9 @@ import (
 	"sync"
 	"time"
 
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/api"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/bus"
+	xynoplex "github.com/Xynoplex/sdk/go"
+	"github.com/Xynoplex/sdk/go/api"
+	"github.com/Xynoplex/sdk/go/bus"
 )
 
 // statusCeilingTimeout bounds each bus request status makes. A verb waits 30
@@ -74,7 +74,7 @@ func fetchModelCeilings(u *UI, st *StackState) modelCeilings {
 	)
 	for _, op := range bus.LimitsOperations {
 		wg.Go(func() {
-			r, err := semiont.Request(platform.Context(), platform.Wire, op, api.InferenceLimitsRequest{}, statusCeilingTimeout)
+			r, err := xynoplex.Request(platform.Context(), platform.Wire, op, api.InferenceLimitsRequest{}, statusCeilingTimeout)
 			if err != nil {
 				return
 			}

@@ -20,8 +20,8 @@ import (
 
 	launcher "github.com/Xynoplex/cli/internal/launcher"
 
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/api"
+	xynoplex "github.com/Xynoplex/sdk/go"
+	"github.com/Xynoplex/sdk/go/api"
 )
 
 const matchIDs = "xynaut match [options] -- <resourceId> <annotationId>"
@@ -177,7 +177,7 @@ options:
 		if limit == 0 {
 			limit = 20
 		}
-		filters := semiont.ResourceFilters{Limit: limit}
+		filters := xynoplex.ResourceFilters{Limit: limit}
 		if entityType != "" {
 			filters.EntityType = &entityType
 		}
@@ -205,7 +205,7 @@ options:
 
 	// Step 2: the scored search, grounded by that context.
 	semantic := !noSemantic
-	results, err := c.Match.Search(rid, aid, gathered.Response, semiont.MatchSearchOptions{Limit: limit, UseSemanticScoring: &semantic}).Wait(c.Context())
+	results, err := c.Match.Search(rid, aid, gathered.Response, xynoplex.MatchSearchOptions{Limit: limit, UseSemanticScoring: &semantic}).Wait(c.Context())
 	if err != nil {
 		return busFail(u, "match", c.Refusal(err))
 	}

@@ -19,8 +19,8 @@ import (
 
 	launcher "github.com/Xynoplex/cli/internal/launcher"
 
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/api"
+	xynoplex "github.com/Xynoplex/sdk/go"
+	"github.com/Xynoplex/sdk/go/api"
 )
 
 const (
@@ -120,7 +120,7 @@ func listMCPResources(ctx context.Context, sessions *launcher.Sessions) (*mcp.Li
 			continue
 		}
 		c := session.Client()
-		page, err := c.Browse.Resources(semiont.ResourceFilters{}).Fresh(ctx)
+		page, err := c.Browse.Resources(xynoplex.ResourceFilters{}).Fresh(ctx)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "xynaut mcp: %s's resources are not listed: %v\n", kb.Key, c.Refusal(err))
 			continue

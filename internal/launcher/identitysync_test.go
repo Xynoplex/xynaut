@@ -12,7 +12,7 @@ import (
 	"sync"
 	"testing"
 
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
+	xynoplex "github.com/Xynoplex/sdk/go"
 )
 
 // `xynaut identity sync` — the repair the identity preflight's refusals name.
@@ -642,15 +642,15 @@ func TestIdentitySyncBringsTheWorkersClientToThisMachinesKey(t *testing.T) {
 // in to.
 func TestIdentitySyncAddsMissingLoopbackRedirects(t *testing.T) {
 	reps := append(allServiceClientReps(),
-		map[string]any{"clientId": semiont.BrowserClientID, "redirectUris": []any{"http://localhost:3000/*"}},
-		map[string]any{"clientId": semiont.ScriptClientID})
+		map[string]any{"clientId": xynoplex.BrowserClientID, "redirectUris": []any{"http://localhost:3000/*"}},
+		map[string]any{"clientId": xynoplex.ScriptClientID})
 	s := newStubAdmin(t, "semiont", reps)
 
 	rep, err := syncRealm(s.srv.URL, "semiont", "admin", "pw", "semiont-gateway", 300, catalogBrowser().Spec.Port, testAccounts())
 	if err != nil {
 		t.Fatalf("sync: %v", err)
 	}
-	patch, ok := s.updated[semiont.BrowserClientID]
+	patch, ok := s.updated[xynoplex.BrowserClientID]
 	if !ok {
 		t.Fatal("a realm pinned to :3000 was left pinned")
 	}
@@ -674,15 +674,15 @@ func TestIdentitySyncAddsMissingLoopbackRedirects(t *testing.T) {
 // name.
 func TestIdentitySyncDisablesTheImplicitFlow(t *testing.T) {
 	reps := append(allServiceClientReps(),
-		map[string]any{"clientId": semiont.BrowserClientID, "implicitFlowEnabled": true,
+		map[string]any{"clientId": xynoplex.BrowserClientID, "implicitFlowEnabled": true,
 			"redirectUris": []any{"http://localhost/*", "http://127.0.0.1/*"}},
-		map[string]any{"clientId": semiont.ScriptClientID})
+		map[string]any{"clientId": xynoplex.ScriptClientID})
 	s := newStubAdmin(t, "semiont", reps)
 
 	if _, err := syncRealm(s.srv.URL, "semiont", "admin", "pw", "semiont-gateway", 300, catalogBrowser().Spec.Port, testAccounts()); err != nil {
 		t.Fatalf("sync: %v", err)
 	}
-	patch, ok := s.updated[semiont.BrowserClientID]
+	patch, ok := s.updated[xynoplex.BrowserClientID]
 	if !ok {
 		t.Fatal("a client with the implicit flow enabled was left alone")
 	}
@@ -695,8 +695,8 @@ func TestIdentitySyncDisablesTheImplicitFlow(t *testing.T) {
 // warns when the realm disagrees; sync is what changes it.
 func TestIdentitySyncCorrectsTheAccessTokenLifespan(t *testing.T) {
 	reps := append(allServiceClientReps(),
-		map[string]any{"clientId": semiont.BrowserClientID, "redirectUris": []any{"http://localhost/*", "http://127.0.0.1/*"}},
-		map[string]any{"clientId": semiont.ScriptClientID})
+		map[string]any{"clientId": xynoplex.BrowserClientID, "redirectUris": []any{"http://localhost/*", "http://127.0.0.1/*"}},
+		map[string]any{"clientId": xynoplex.ScriptClientID})
 	s := newStubAdmin(t, "semiont", reps)
 	s.realmCfg = map[string]any{"accessTokenLifespan": float64(1800)}
 
@@ -726,10 +726,10 @@ func correctRealm() []map[string]any {
 		// A correct realm carries the port-ful web origins too: CORS origins
 		// are matched exactly, so the portless redirect URIs beside them
 		// cannot stand in for the Browser's real origin.
-		map[string]any{"clientId": semiont.BrowserClientID, "implicitFlowEnabled": false,
+		map[string]any{"clientId": xynoplex.BrowserClientID, "implicitFlowEnabled": false,
 			"redirectUris": []any{"http://localhost/*", "http://127.0.0.1/*", "http://10.0.0.5:3000/*"},
 			"webOrigins":   []any{"http://localhost:3000", "http://127.0.0.1:3000", "http://10.0.0.5:3000"}},
-		map[string]any{"clientId": semiont.ScriptClientID, "implicitFlowEnabled": false})
+		map[string]any{"clientId": xynoplex.ScriptClientID, "implicitFlowEnabled": false})
 }
 
 // The control: a correct realm is not written to at all. Without this, every
@@ -801,15 +801,15 @@ func TestIdentityVerbRejectsAnUnknownFlag(t *testing.T) {
 // preflight's finding names this command by name.
 func TestIdentitySyncAddsMissingBrowserWebOrigins(t *testing.T) {
 	reps := append(allServiceClientReps(),
-		map[string]any{"clientId": semiont.BrowserClientID, "webOrigins": []any{"+"}},
-		map[string]any{"clientId": semiont.ScriptClientID})
+		map[string]any{"clientId": xynoplex.BrowserClientID, "webOrigins": []any{"+"}},
+		map[string]any{"clientId": xynoplex.ScriptClientID})
 	s := newStubAdmin(t, "semiont", reps)
 
 	rep, err := syncRealm(s.srv.URL, "semiont", "admin", "pw", "semiont-gateway", 300, catalogBrowser().Spec.Port, testAccounts())
 	if err != nil {
 		t.Fatalf("sync: %v", err)
 	}
-	patch, ok := s.updated[semiont.BrowserClientID]
+	patch, ok := s.updated[xynoplex.BrowserClientID]
 	if !ok {
 		t.Fatal("a realm deriving its origins was left deriving them")
 	}
@@ -834,14 +834,14 @@ func TestIdentitySyncAddsMissingBrowserWebOrigins(t *testing.T) {
 // actually work.
 func TestIdentitySyncWritesTheBrowsersActualPort(t *testing.T) {
 	reps := append(allServiceClientReps(),
-		map[string]any{"clientId": semiont.BrowserClientID, "webOrigins": []any{"+"}},
-		map[string]any{"clientId": semiont.ScriptClientID})
+		map[string]any{"clientId": xynoplex.BrowserClientID, "webOrigins": []any{"+"}},
+		map[string]any{"clientId": xynoplex.ScriptClientID})
 	s := newStubAdmin(t, "semiont", reps)
 
 	if _, err := syncRealm(s.srv.URL, "semiont", "admin", "pw", "semiont-gateway", 300, 3001, testAccounts()); err != nil {
 		t.Fatalf("sync: %v", err)
 	}
-	origins, _ := json.Marshal(s.updated[semiont.BrowserClientID]["webOrigins"])
+	origins, _ := json.Marshal(s.updated[xynoplex.BrowserClientID]["webOrigins"])
 	if !strings.Contains(string(origins), "http://localhost:3001") {
 		t.Errorf("sync did not write the moved port: %s", origins)
 	}
@@ -854,15 +854,15 @@ func TestIdentitySyncLeavesCorrectWebOriginsAlone(t *testing.T) {
 		origins = append(origins, o)
 	}
 	reps := append(allServiceClientReps(),
-		map[string]any{"clientId": semiont.BrowserClientID, "webOrigins": origins,
+		map[string]any{"clientId": xynoplex.BrowserClientID, "webOrigins": origins,
 			"redirectUris": []any{"http://localhost/*", "http://127.0.0.1/*"}},
-		map[string]any{"clientId": semiont.ScriptClientID})
+		map[string]any{"clientId": xynoplex.ScriptClientID})
 	s := newStubAdmin(t, "semiont", reps)
 
 	if _, err := syncRealm(s.srv.URL, "semiont", "admin", "pw", "semiont-gateway", 300, catalogBrowser().Spec.Port, testAccounts()); err != nil {
 		t.Fatalf("sync: %v", err)
 	}
-	if patch, ok := s.updated[semiont.BrowserClientID]; ok {
+	if patch, ok := s.updated[xynoplex.BrowserClientID]; ok {
 		if _, touched := patch["webOrigins"]; touched {
 			t.Errorf("a realm already carrying the origins was patched: %v", patch["webOrigins"])
 		}

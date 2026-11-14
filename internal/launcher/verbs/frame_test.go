@@ -8,9 +8,9 @@ import (
 	launcher "github.com/Xynoplex/cli/internal/launcher"
 	"github.com/Xynoplex/cli/internal/launcher/harness"
 
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/bus"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/semionttest"
+	xynoplex "github.com/Xynoplex/sdk/go"
+	"github.com/Xynoplex/sdk/go/bus"
+	"github.com/Xynoplex/sdk/go/xynoplextest"
 )
 
 // `xynaut frame`, in process against the fake transport. These were
@@ -25,17 +25,17 @@ import (
 
 // withFake wires a faulty transport plus the on-disk session state a verb
 // needs, and returns the transport and a restore func.
-func withFake(t *testing.T) (*semionttest.FaultyTransport, func()) {
+func withFake(t *testing.T) (*xynoplextest.FaultyTransport, func()) {
 	t.Helper()
 	verbFixture(t)
-	fake := semionttest.NewFaultyTransport(semionttest.FaultyConfig{Channels: bus.BridgedChannels})
-	restore := launcher.UseTransport(func(semiont.HTTPTransportConfig) semiont.Transport { return fake })
+	fake := xynoplextest.NewFaultyTransport(xynoplextest.FaultyConfig{Channels: bus.BridgedChannels})
+	restore := launcher.UseTransport(func(xynoplex.HTTPTransportConfig) xynoplex.Transport { return fake })
 	return fake, restore
 }
 
 // signals is every frame a verb emitted that is no request, in order.
-func signals(fake *semionttest.FaultyTransport) []semiont.Frame {
-	var sent []semiont.Frame
+func signals(fake *xynoplextest.FaultyTransport) []xynoplex.Frame {
+	var sent []xynoplex.Frame
 	for _, frame := range fake.Emitted() {
 		if _, request := bus.Operations[frame.Channel]; !request {
 			sent = append(sent, frame)
@@ -45,7 +45,7 @@ func signals(fake *semionttest.FaultyTransport) []semiont.Frame {
 }
 
 // ops is the channel of every request a verb sent, in order.
-func ops(fake *semionttest.FaultyTransport) []bus.Channel {
+func ops(fake *xynoplextest.FaultyTransport) []bus.Channel {
 	var channels []bus.Channel
 	for _, request := range fake.RequestLog() {
 		channels = append(channels, request.Channel)
@@ -54,7 +54,7 @@ func ops(fake *semionttest.FaultyTransport) []bus.Channel {
 }
 
 // refusing has the gateway refuse every request on channel with failure.
-func refusing(channel bus.Channel, failure string) semionttest.Refuse {
+func refusing(channel bus.Channel, failure string) xynoplextest.Refuse {
 	return func(operation bus.Channel, _ json.RawMessage) json.RawMessage {
 		if operation != channel {
 			return nil

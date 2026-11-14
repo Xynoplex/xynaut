@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/api"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/bus"
+	"github.com/Xynoplex/sdk/go/api"
+	"github.com/Xynoplex/sdk/go/bus"
 
 	"github.com/Xynoplex/cli/internal/launcher/stack"
 )

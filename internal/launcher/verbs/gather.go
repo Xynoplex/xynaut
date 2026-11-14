@@ -10,7 +10,7 @@ import (
 
 	launcher "github.com/Xynoplex/cli/internal/launcher"
 
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/api"
+	"github.com/Xynoplex/sdk/go/api"
 )
 
 const gatherIDs = "xynaut gather [options] -- <resourceId> [<annotationId>]"

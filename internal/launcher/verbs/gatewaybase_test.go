@@ -7,7 +7,7 @@ import (
 	launcher "github.com/Xynoplex/cli/internal/launcher"
 	"github.com/Xynoplex/cli/internal/launcher/harness"
 
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
+	xynoplex "github.com/Xynoplex/sdk/go"
 )
 
 // noGatewayFixture is verbFixture with the local stack's record naming no
@@ -17,7 +17,7 @@ func noGatewayFixture(t *testing.T) *int {
 	verbFixture(t)
 	recordStacks(t, localStack(launcher.ServiceState{Container: "semiont-example.org-kb-gateway"}))
 	built := 0
-	t.Cleanup(launcher.UseTransport(func(semiont.HTTPTransportConfig) semiont.Transport {
+	t.Cleanup(launcher.UseTransport(func(xynoplex.HTTPTransportConfig) xynoplex.Transport {
 		built++
 		return nil
 	}))

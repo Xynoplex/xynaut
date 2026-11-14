@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/api"
+	"github.com/Xynoplex/sdk/go/api"
 )
 
 // namesItsKB: whether a service's document names the knowledge base it serves —

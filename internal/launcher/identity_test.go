@@ -14,7 +14,7 @@ import (
 	"testing"
 
 	"github.com/Xynoplex/cli/internal/launcher/stack"
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
+	xynoplex "github.com/Xynoplex/sdk/go"
 )
 
 // trustExternalIssuer: st trusting an issuer somebody else runs, and so not
@@ -192,7 +192,7 @@ func TestTheRealmMarksEveryAgentsAccountAndNoPersons(t *testing.T) {
 	accounts := 0
 	for _, c := range doc.Clients {
 		switch c["clientId"] {
-		case semiont.BrowserClientID, semiont.ScriptClientID:
+		case xynoplex.BrowserClientID, xynoplex.ScriptClientID:
 			if stamps(c) {
 				t.Errorf("%v, a client people sign in through, stamps the agent kind", c["clientId"])
 			}

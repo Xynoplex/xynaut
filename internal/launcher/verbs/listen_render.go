@@ -33,8 +33,8 @@ import (
 
 	launcher "github.com/Xynoplex/cli/internal/launcher"
 
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/bus"
+	xynoplex "github.com/Xynoplex/sdk/go"
+	"github.com/Xynoplex/sdk/go/bus"
 )
 
 type listenRenderer struct {
@@ -69,7 +69,7 @@ func (r *listenRenderer) resourceLabel(id string) string {
 
 // line renders ONE event for a human and folds it into the renderer's state.
 // Returns the text to print; callers print it verbatim.
-func (r *listenRenderer) line(u *launcher.UI, frame semiont.Frame) string {
+func (r *listenRenderer) line(u *launcher.UI, frame xynoplex.Frame) string {
 	var p struct {
 		ResourceID   string `json:"resourceId"`
 		AnnotationID string `json:"annotationId"`

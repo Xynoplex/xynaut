@@ -15,7 +15,7 @@ import (
 
 	"github.com/Xynoplex/cli/internal/launcher/harness"
 	"github.com/Xynoplex/cli/internal/launcher/stack"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/api"
+	"github.com/Xynoplex/sdk/go/api"
 )
 
 // It is kept in the state home, in stack/, beside the Browser's.

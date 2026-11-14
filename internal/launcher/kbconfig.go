@@ -18,8 +18,8 @@ import (
 	"path/filepath"
 
 	"github.com/Xynoplex/cli/internal/launcher/stack"
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/api"
+	xynoplex "github.com/Xynoplex/sdk/go"
+	"github.com/Xynoplex/sdk/go/api"
 )
 
 // projectFileYAML: the project file's name, below .semiont.
@@ -81,7 +81,7 @@ func (k *kbIdentity) resource() string {
 	if k == nil {
 		return ""
 	}
-	return semiont.KbResource(k.Domain)
+	return xynoplex.KbResource(k.Domain)
 }
 
 // name is the name the Archivist computes for the knowledge base at root: the
@@ -156,7 +156,7 @@ func yamlKBIdentity(where string, text []byte) (*kbIdentity, error) {
 	if err != nil {
 		return nil, err
 	}
-	did, err := semiont.KbDid(project.Site.Domain)
+	did, err := xynoplex.KbDid(project.Site.Domain)
 	if err != nil {
 		return nil, fmt.Errorf("%s: site.domain %q names no DID: %w", where, project.Site.Domain, err)
 	}

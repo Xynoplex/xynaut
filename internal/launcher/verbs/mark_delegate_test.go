@@ -18,8 +18,8 @@ import (
 	launcher "github.com/Xynoplex/cli/internal/launcher"
 	"github.com/Xynoplex/cli/internal/launcher/harness"
 
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/api"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/bus"
+	"github.com/Xynoplex/sdk/go/api"
+	"github.com/Xynoplex/sdk/go/bus"
 )
 
 func specFile(t *testing.T, path ...string) []byte {

@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/Xynoplex/cli/internal/launcher/stack"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/api"
+	"github.com/Xynoplex/sdk/go/api"
 )
 
 // fixtureRoot: the fixture knowledge base the launcher's tests read.

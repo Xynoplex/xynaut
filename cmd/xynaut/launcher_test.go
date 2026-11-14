@@ -47,8 +47,8 @@ import (
 
 	"github.com/Xynoplex/cli/internal/launcher/harness"
 
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/api"
+	xynoplex "github.com/Xynoplex/sdk/go"
+	"github.com/Xynoplex/sdk/go/api"
 )
 
 var updateGoldens = flag.Bool("update-goldens", false, "rewrite golden files from observed output")
@@ -2229,13 +2229,13 @@ func TestTwoKnowledgeBasesStartInTurn(t *testing.T) {
 		t.Fatalf("the second knowledge base's start: exit %d\nstdout:\n%s\nstderr:\n%s", code, stdout, stderr)
 	}
 	realm := realmOf(t, s, "example.github.io-other-kb")
-	mustContain(t, "the second start's realm", realm, semiont.KbResource("example.github.io:other-kb"))
-	if strings.Contains(realm, semiont.KbResource("example.github.io:test-kb")) {
+	mustContain(t, "the second start's realm", realm, xynoplex.KbResource("example.github.io:other-kb"))
+	if strings.Contains(realm, xynoplex.KbResource("example.github.io:test-kb")) {
 		t.Errorf("the second knowledge base's realm names the first's audience:\n%s", realm)
 	}
 	// The first's realm is held beside it, in the database every realm here
 	// is kept in.
-	mustContain(t, "the first start's realm", realmOf(t, s, testKBKey), semiont.KbResource("example.github.io:test-kb"))
+	mustContain(t, "the first start's realm", realmOf(t, s, testKBKey), xynoplex.KbResource("example.github.io:test-kb"))
 
 	for _, key := range []string{testKBKey, "example.github.io-other-kb"} {
 		if _, err := os.Stat(stateRootFor(s.home, key)); err != nil {
@@ -3862,7 +3862,7 @@ func TestCleanDeletesTheRealmAtTheSharedIssuer(t *testing.T) {
 	if _, err := os.Stat(filepath.Join(s.fakertDir, "realm-"+containerOf("keycloak")+"-"+testKBKey+".json")); !os.IsNotExist(err) {
 		t.Errorf("the realm is held after its clean (%v)", err)
 	}
-	mustContain(t, "the other's realm", realmOf(t, s, "example.github.io-other-kb"), semiont.KbResource("example.github.io:other-kb"))
+	mustContain(t, "the other's realm", realmOf(t, s, "example.github.io-other-kb"), xynoplex.KbResource("example.github.io:other-kb"))
 	if _, err := os.Stat(filepath.Join(sharedStateFor(s.home), "postgres")); err != nil {
 		t.Errorf("a knowledge base's clean took the store every realm is kept in: %v", err)
 	}
@@ -4611,9 +4611,9 @@ func tagOf(token string) string {
 }
 
 // storedSignIn is the sign-in tokens.json holds under home for key.
-func storedSignIn(t *testing.T, home, key string) (semiont.SignIn, bool) {
+func storedSignIn(t *testing.T, home, key string) (xynoplex.SignIn, bool) {
 	t.Helper()
-	signIn, ok, err := semiont.NewSignInStore(tokensPathFor(home)).SignIn(key)
+	signIn, ok, err := xynoplex.NewSignInStore(tokensPathFor(home)).SignIn(key)
 	if err != nil {
 		t.Fatalf("tokens.json: %v", err)
 	}

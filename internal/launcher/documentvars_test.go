@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/Xynoplex/cli/internal/launcher/stack"
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
+	xynoplex "github.com/Xynoplex/sdk/go"
 )
 
 // namedVariables: every variable a document names — the string under each key
@@ -97,7 +97,7 @@ func TestEveryVariableADocumentNamesIsHanded(t *testing.T) {
 		handed := withDaemonCredentialVars(byService, p.plan, st.KnowledgeBase.Spec.Messaging.Signal.Type == "nats")
 		// And the token a start mints for each service it hands one
 		// (vectorsTokenEnv).
-		did, err := semiont.KbDid(exampleKB.Domain)
+		did, err := xynoplex.KbDid(exampleKB.Domain)
 		if err != nil {
 			t.Fatal(err)
 		}

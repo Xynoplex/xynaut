@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
+	xynoplex "github.com/Xynoplex/sdk/go"
 )
 
 // The data home and the log dir on each system, whichever machine runs this:
@@ -64,7 +64,7 @@ func TestTheDataHomeIsTheStateHomeWhereTheSystemKeepsOneBucket(t *testing.T) {
 		{"windows", `C:\Users\alice`, `C:\Users\alice\AppData\Local`},
 		{"windows", `C:\Users\alice`, ""},
 	} {
-		state, _ := semiont.StateDir(semiont.System(c.system), c.home, "", c.local)
+		state, _ := xynoplex.StateDir(xynoplex.System(c.system), c.home, "", c.local)
 		if data := dataDirFor(c.system, c.home, "", c.local); data != state {
 			t.Errorf("%s: the data home %q is not the state home %q", c.system, data, state)
 		}

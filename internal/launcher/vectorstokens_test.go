@@ -12,7 +12,7 @@ import (
 	"strings"
 	"testing"
 
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
+	xynoplex "github.com/Xynoplex/sdk/go"
 )
 
 // The tokens the launcher mints are the ones every case of
@@ -121,7 +121,7 @@ func TestVectorsTokensAreRefusedWhatNamesNoCollections(t *testing.T) {
 // key it loaded, each its own, for a Qdrant the launcher runs; for somebody
 // else's it mints none, and a start that loaded no key mints nothing.
 func TestAStartHandsEachServiceItsOwnToken(t *testing.T) {
-	did, err := semiont.KbDid("example.github.io:plain-kb")
+	did, err := xynoplex.KbDid("example.github.io:plain-kb")
 	if err != nil {
 		t.Fatal(err)
 	}

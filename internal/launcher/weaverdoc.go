@@ -15,8 +15,8 @@ import (
 	"encoding/hex"
 	"encoding/json"
 
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/api"
+	xynoplex "github.com/Xynoplex/sdk/go"
+	"github.com/Xynoplex/sdk/go/api"
 )
 
 // weaverDocumentFile: the Weaver is configured by a document, not a copy of
@@ -71,7 +71,7 @@ func graphConfig(p placement, served api.KbIdentity, who string) (graph api.Grap
 	if g.Type != string(api.Neo4jGraphConfigTypeNeo4j) {
 		return graph, planErr(p.st.Files.KnowledgeIndex, "spec.graph.type", "is %q: the launcher writes %s's document for a neo4j graph alone", g.Type, who)
 	}
-	did, err := semiont.KbDid(served.Domain)
+	did, err := xynoplex.KbDid(served.Domain)
 	if err != nil {
 		return graph, err
 	}

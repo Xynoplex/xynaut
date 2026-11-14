@@ -18,20 +18,20 @@ import (
 	"slices"
 	"sync"
 
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/bus"
+	xynoplex "github.com/Xynoplex/sdk/go"
+	"github.com/Xynoplex/sdk/go/bus"
 )
 
 // newTransport makes the transport a verb talks through. Tests replace it via
 // UseTransport.
-var newTransport = func(config semiont.HTTPTransportConfig) semiont.Transport {
-	return semiont.NewHTTPTransport(config)
+var newTransport = func(config xynoplex.HTTPTransportConfig) xynoplex.Transport {
+	return xynoplex.NewHTTPTransport(config)
 }
 
 // UseTransport swaps the constructor and returns a restore func. Test-only by
 // intent; it lives in the non-test file because the variable it closes over
 // does, and Go has no narrower visibility that keeps them together.
-func UseTransport(f func(config semiont.HTTPTransportConfig) semiont.Transport) (restore func()) {
+func UseTransport(f func(config xynoplex.HTTPTransportConfig) xynoplex.Transport) (restore func()) {
 	prev := newTransport
 	newTransport = f
 	return func() { newTransport = prev }
@@ -54,10 +54,10 @@ func replyChannels() []bus.Channel {
 // client, so whatever the command waits on ends with it; the session's Close
 // closes it.
 type VerbClient struct {
-	*semiont.Client
+	*xynoplex.Client
 	sess   *Session
-	bus    semiont.Transport
-	direct *semiont.HTTPTransport
+	bus    xynoplex.Transport
+	direct *xynoplex.HTTPTransport
 	// unhook lets go of the session's end, which closes the client.
 	unhook func() bool
 
@@ -82,21 +82,21 @@ func (s *Session) Client() *VerbClient { return s.client }
 // every operation's reply channels, and channels besides: the broadcasts a
 // verb follows.
 func (s *Session) openClient(channels []bus.Channel) *VerbClient {
-	config := semiont.HTTPTransportConfig{
+	config := xynoplex.HTTPTransportConfig{
 		BaseURL:   s.base,
 		Token:     s.token,
 		Refresher: s,
 		HTTP:      &http.Client{Transport: launcherTransport},
-		Timing:    semiont.DefaultTiming(),
+		Timing:    xynoplex.DefaultTiming(),
 	}
-	direct := semiont.NewHTTPTransport(config)
+	direct := xynoplex.NewHTTPTransport(config)
 	config.Channels = append(replyChannels(), channels...)
 	transport := newTransport(config)
-	client := semiont.NewClient(semiont.ClientConfig{
+	client := xynoplex.NewClient(xynoplex.ClientConfig{
 		Transport: transport,
-		Content:   semiont.NewHTTPContentTransport(direct),
+		Content:   xynoplex.NewHTTPContentTransport(direct),
 		Gateway:   direct,
-		Timing:    semiont.DefaultTiming(),
+		Timing:    xynoplex.DefaultTiming(),
 	})
 	return &VerbClient{Client: client, sess: s, bus: transport, direct: direct, unhook: context.AfterFunc(s.ended, client.Close)}
 }
@@ -115,9 +115,9 @@ func (c *VerbClient) Reached() error {
 	c.reach.Do(func() {
 		for state := range c.bus.State().Changes(c.sess.ended) {
 			switch state {
-			case semiont.ConnectionStateOpen, semiont.ConnectionStateUnauthenticated, semiont.ConnectionStateClosed:
+			case xynoplex.ConnectionStateOpen, xynoplex.ConnectionStateUnauthenticated, xynoplex.ConnectionStateClosed:
 				return
-			case semiont.ConnectionStateReconnecting, semiont.ConnectionStateDegraded:
+			case xynoplex.ConnectionStateReconnecting, xynoplex.ConnectionStateDegraded:
 				c.unreachable = &GatewayUnreached{Base: c.sess.base}
 				return
 			}
@@ -149,8 +149,8 @@ func (c *VerbClient) closeTransports() {
 // refused credential, and anything that failed once the session was over, are
 // the session's rejection; anything else is as it came.
 func (s *Session) refusal(err error) error {
-	var refused *semiont.TransportError
-	if errors.As(err, &refused) && refused.Code == semiont.TransportErrorCodeUnauthorized {
+	var refused *xynoplex.TransportError
+	if errors.As(err, &refused) && refused.Code == xynoplex.TransportErrorCodeUnauthorized {
 		// The transport asked the session for a token and sent the request
 		// again with it, so this is the second refusal: unless the session has
 		// already ended for its own reason, the gateway refused a token the

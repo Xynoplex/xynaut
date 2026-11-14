@@ -8,7 +8,7 @@ package launcher
 
 import (
 	"github.com/Xynoplex/cli/internal/launcher/stack"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/api"
+	"github.com/Xynoplex/sdk/go/api"
 )
 
 // workerPoolDocument: the worker's document as a command read it.

@@ -16,7 +16,7 @@ import (
 	"strings"
 	"time"
 
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
+	xynoplex "github.com/Xynoplex/sdk/go"
 )
 
 const statusUsage = `Usage: xynaut status [--root <path|name>] [--repo <owner/name> [--refresh]] [--service <name>] [--runtime container|docker|podman] [--verbose] [--billing]
@@ -1357,19 +1357,19 @@ var sessionStateText = map[string]string{
 // storedTokenState is what the gateway at base says of a stored token: asked
 // once, by a transport that opens no stream and renews nothing.
 func storedTokenState(base, token string) string {
-	asker := semiont.NewHTTPTransport(semiont.HTTPTransportConfig{
-		BaseURL: base, Token: semiont.NewVariable(token),
-		HTTP: &http.Client{Transport: launcherTransport}, Timing: semiont.DefaultTiming(),
+	asker := xynoplex.NewHTTPTransport(xynoplex.HTTPTransportConfig{
+		BaseURL: base, Token: xynoplex.NewVariable(token),
+		HTTP: &http.Client{Transport: launcherTransport}, Timing: xynoplex.DefaultTiming(),
 	})
 	defer asker.Close()
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 	_, err := asker.GetCurrentUser(ctx)
-	var refused *semiont.TransportError
+	var refused *xynoplex.TransportError
 	switch {
 	case err == nil:
 		return sessionValid
-	case errors.As(err, &refused) && refused.Code == semiont.TransportErrorCodeUnauthorized:
+	case errors.As(err, &refused) && refused.Code == xynoplex.TransportErrorCodeUnauthorized:
 		return sessionExpired
 	}
 	return sessionUnverified
@@ -1625,9 +1625,9 @@ func roleHealthy(role, endpoint string) bool {
 		return probeHealth(endpoint)
 	}
 	// Asked with no token, by a transport that opens no stream without one.
-	asker := semiont.NewHTTPTransport(semiont.HTTPTransportConfig{
-		BaseURL: base, Token: semiont.NewVariable(""),
-		HTTP: &http.Client{Transport: launcherTransport}, Timing: semiont.DefaultTiming(),
+	asker := xynoplex.NewHTTPTransport(xynoplex.HTTPTransportConfig{
+		BaseURL: base, Token: xynoplex.NewVariable(""),
+		HTTP: &http.Client{Transport: launcherTransport}, Timing: xynoplex.DefaultTiming(),
 	})
 	defer asker.Close()
 	// The budget matches the generic prober's, so one slow role cannot stall

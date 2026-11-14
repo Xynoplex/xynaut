@@ -8,7 +8,7 @@ import (
 	"net/url"
 	"strings"
 
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
+	xynoplex "github.com/Xynoplex/sdk/go"
 )
 
 // statusSnapshot: each knowledge base of views and of codespaces, and the
@@ -32,7 +32,7 @@ func statusSnapshot(ss *StackSet, views []stackView, cwd kbRoot, codespaces []*S
 // knowledgeBaseStatus: v's knowledge base, and each of its own services, group
 // by group, then the issuer it signs in at. A view no stack is recorded for is
 // cwd's, discovered by its containers' names.
-func knowledgeBaseStatus(v stackView, ss *StackSet, cwd kbRoot, published []publishedKB, tokens map[string]semiont.SignIn) ControlKnowledgeBaseStatus {
+func knowledgeBaseStatus(v stackView, ss *StackSet, cwd kbRoot, published []publishedKB, tokens map[string]xynoplex.SignIn) ControlKnowledgeBaseStatus {
 	kb := ControlKnowledgeBaseStatus{Name: v.name, Key: v.key, Recorded: v.st != nil,
 		Placement: DiscoveredKBPlacementLocal, Services: []ControlServiceStatus{}}
 	st := v.st
@@ -135,7 +135,7 @@ func serviceHealthy(services []ControlServiceStatus, role string) bool {
 
 // codespaceStatus: a codespace's knowledge base, as this machine reaches it
 // through its forward. Its services are its own launcher's to report.
-func codespaceStatus(c *StackState, recorded bool, published []publishedKB, tokens map[string]semiont.SignIn) ControlKnowledgeBaseStatus {
+func codespaceStatus(c *StackState, recorded bool, published []publishedKB, tokens map[string]xynoplex.SignIn) ControlKnowledgeBaseStatus {
 	repo := c.Codespace.Repo
 	kb := ControlKnowledgeBaseStatus{Name: repo, Key: StackKey(c), Recorded: recorded,
 		Placement: DiscoveredKBPlacementCodespace, Repo: &repo, Did: stated(c.KBDid), Services: []ControlServiceStatus{}}
@@ -161,7 +161,7 @@ func publishedEntry(published []publishedKB, st *StackState) *DiscoveredKB {
 
 // sessionOf: the launcher's stored sign-in for the stack key, as the gateway
 // at base judges its token; unverified when there is no base to ask.
-func sessionOf(key string, base *string, tokens map[string]semiont.SignIn) *ControlSession {
+func sessionOf(key string, base *string, tokens map[string]xynoplex.SignIn) *ControlSession {
 	held, ok := tokens[key]
 	if !ok {
 		return &ControlSession{State: sessionNone}

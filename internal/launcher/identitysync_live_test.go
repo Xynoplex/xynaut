@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
+	xynoplex "github.com/Xynoplex/sdk/go"
 )
 
 // Live reconciliation against a REAL Keycloak, in a throwaway realm.
@@ -86,7 +86,7 @@ func TestIdentitySyncLive(t *testing.T) {
 	//    And for the worker, by the assertion the preflight signs: Keycloak
 	//    checks it with the key sync registered, and stamps the worker role.
 	worker, err := clientCredentialsClaims(tokenEndpoint,
-		semiont.KeyCredential{Issuer: issuer, ClientID: serviceClientID("worker"), PrivateKey: testWorkerKey().signer})
+		xynoplex.KeyCredential{Issuer: issuer, ClientID: serviceClientID("worker"), PrivateKey: testWorkerKey().signer})
 	if err != nil {
 		t.Fatalf("the worker's grant: %v — the client sync created does not take the worker key", err)
 	}
@@ -194,7 +194,7 @@ func liveTokenEndpoint(t *testing.T, base, realm string) (issuer, tokenEndpoint 
 func liveClientCredentials(t *testing.T, issuer, tokenEndpoint, clientID, secret string) map[string]any {
 	t.Helper()
 	claims, err := clientCredentialsClaims(tokenEndpoint,
-		semiont.SecretCredential{Issuer: issuer, ClientID: clientID, ClientSecret: secret})
+		xynoplex.SecretCredential{Issuer: issuer, ClientID: clientID, ClientSecret: secret})
 	if err != nil {
 		t.Fatalf("client-credentials grant for %s: %v — the client sync created is not one Keycloak will mint for", clientID, err)
 	}

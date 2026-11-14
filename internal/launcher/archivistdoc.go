@@ -12,7 +12,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/api"
+	"github.com/Xynoplex/sdk/go/api"
 )
 
 // archivistDocumentFile: the Archivist is configured by a document, not a

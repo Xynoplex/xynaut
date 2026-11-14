@@ -18,8 +18,8 @@ import (
 	"strings"
 	"time"
 
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/api"
+	xynoplex "github.com/Xynoplex/sdk/go"
+	"github.com/Xynoplex/sdk/go/api"
 )
 
 // stager: writes what a container will read: each service's configuration document, the launcher-owned
@@ -986,7 +986,7 @@ func (x *liveExec) preflightIdentity(issuerBase, audience string, accounts realm
 		fmt.Fprintln(os.Stderr, "  nobody could open the knowledge base.")
 		return false
 	}
-	x.u.Log("Sign-in clients: %s", x.u.Dim(semiont.BrowserClientID+" and "+semiont.ScriptClientID+" verified at the realm"))
+	x.u.Log("Sign-in clients: %s", x.u.Dim(xynoplex.BrowserClientID+" and "+xynoplex.ScriptClientID+" verified at the realm"))
 	return true
 }
 
@@ -1522,10 +1522,10 @@ func (x *planExec) preflightIdentity(issuerBase, audience string, accounts realm
 	}
 	x.c("client-credentials grant at %s as %s, by an assertion signed with the shared worker key (%s) — require flat `roles` containing %q and %q, and `aud` containing %s",
 		issuerBase, serviceClientID("worker"), accounts.worker.thumbprint, serviceRole, workerRole, audience)
-	x.c("device authorization at %s as %s — require the grant to be enabled for it", issuerBase, semiont.ScriptClientID)
-	x.c("authorization request at %s as %s — require a redirect to %s", issuerBase, semiont.BrowserClientID, browserRedirect(browserPort))
+	x.c("device authorization at %s as %s — require the grant to be enabled for it", issuerBase, xynoplex.ScriptClientID)
+	x.c("authorization request at %s as %s — require a redirect to %s", issuerBase, xynoplex.BrowserClientID, browserRedirect(browserPort))
 	x.c("the same request carrying NO code challenge — require it to be refused, so PKCE is enforced rather than merely offered")
-	x.c("password grant at %s as %s and %s, sending no credential — require both to refuse it", issuerBase, semiont.BrowserClientID, semiont.ScriptClientID)
+	x.c("password grant at %s as %s and %s, sending no credential — require both to refuse it", issuerBase, xynoplex.BrowserClientID, xynoplex.ScriptClientID)
 	if wantLifespan > 0 {
 		x.c("compare `exp - iat` on those tokens against the configured %ds — warn if the realm was created with another", wantLifespan)
 	}

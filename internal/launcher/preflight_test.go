@@ -16,7 +16,7 @@ import (
 	"sync/atomic"
 	"testing"
 
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
+	xynoplex "github.com/Xynoplex/sdk/go"
 )
 
 // The identity preflight: before anything starts, each service account's
@@ -43,7 +43,7 @@ func stubIssuer(t *testing.T, grant func(clientID string) (int, string)) *httpte
 	mux.HandleFunc("/token", func(w http.ResponseWriter, r *http.Request) {
 		_ = r.ParseForm()
 		clientID := r.PostFormValue("client_id")
-		if r.PostFormValue("client_assertion_type") == semiont.JWTBearer {
+		if r.PostFormValue("client_assertion_type") == xynoplex.JWTBearer {
 			clientID = assertedClient(r.PostFormValue("client_assertion"), srv.URL+"/token", testWorkerKey())
 		}
 		code, body := 401, `{"error":"invalid_client"}`
@@ -134,7 +134,7 @@ func assertedClient(assertion, tokenEndpoint string, k workerKey) string {
 		}
 	}
 	if header.Alg != "RS256" || header.Kid != k.thumbprint || claims.Iss != claims.Sub ||
-		claims.Aud != tokenEndpoint || claims.Jti == "" || claims.Exp != claims.Iat+semiont.AssertionLifetimeSeconds {
+		claims.Aud != tokenEndpoint || claims.Jti == "" || claims.Exp != claims.Iat+xynoplex.AssertionLifetimeSeconds {
 		return ""
 	}
 	return claims.Iss
@@ -523,8 +523,8 @@ func TestPublicClientsPassOnAHealthyRealm(t *testing.T) {
 // The failure this whole check exists for: the six services authenticate
 // perfectly and no person can get in.
 func TestPublicClientsRefuseWhenTheBrowserClientIsMissing(t *testing.T) {
-	srv := stubPublicIssuer(t, publicStub{missingClient: semiont.BrowserClientID})
-	f, ok := findingFor(verifyPublicClients(srv.URL, catalogBrowser().Spec.Port), semiont.BrowserClientID)
+	srv := stubPublicIssuer(t, publicStub{missingClient: xynoplex.BrowserClientID})
+	f, ok := findingFor(verifyPublicClients(srv.URL, catalogBrowser().Spec.Port), xynoplex.BrowserClientID)
 	if !ok {
 		t.Fatal("a realm with no semiont-browser client passed")
 	}
@@ -542,8 +542,8 @@ func TestPublicClientsRefuseWhenTheBrowserClientIsMissing(t *testing.T) {
 }
 
 func TestPublicClientsRefuseWhenTheCliClientIsMissing(t *testing.T) {
-	srv := stubPublicIssuer(t, publicStub{missingClient: semiont.ScriptClientID})
-	f, ok := findingFor(verifyPublicClients(srv.URL, catalogBrowser().Spec.Port), semiont.ScriptClientID)
+	srv := stubPublicIssuer(t, publicStub{missingClient: xynoplex.ScriptClientID})
+	f, ok := findingFor(verifyPublicClients(srv.URL, catalogBrowser().Spec.Port), xynoplex.ScriptClientID)
 	if !ok {
 		t.Fatal("a realm with no semiont-cli client passed")
 	}
@@ -555,8 +555,8 @@ func TestPublicClientsRefuseWhenTheCliClientIsMissing(t *testing.T) {
 // The client exists but may not use the grant — a different fix from a missing
 // client, so a different message.
 func TestPublicClientsRefuseWhenTheDeviceGrantIsDisabled(t *testing.T) {
-	srv := stubPublicIssuer(t, publicStub{noDeviceGrant: semiont.ScriptClientID})
-	f, ok := findingFor(verifyPublicClients(srv.URL, catalogBrowser().Spec.Port), semiont.ScriptClientID)
+	srv := stubPublicIssuer(t, publicStub{noDeviceGrant: xynoplex.ScriptClientID})
+	f, ok := findingFor(verifyPublicClients(srv.URL, catalogBrowser().Spec.Port), xynoplex.ScriptClientID)
 	if !ok {
 		t.Fatal("a client that cannot use the device grant passed")
 	}
@@ -574,7 +574,7 @@ func TestPublicClientsRefuseWhenTheDeviceGrantIsDisabled(t *testing.T) {
 func TestPublicClientsWarnButDoNotRefuseOnAPinnedPort(t *testing.T) {
 	srv := stubPublicIssuer(t, publicStub{pinnedPort: true})
 	findings := verifyPublicClients(srv.URL, catalogBrowser().Spec.Port)
-	f, ok := findingFor(findings, semiont.BrowserClientID)
+	f, ok := findingFor(findings, xynoplex.BrowserClientID)
 	if !ok {
 		t.Fatal("a realm pinning the browser to :3000 produced no finding")
 	}
@@ -588,7 +588,7 @@ func TestPublicClientsWarnButDoNotRefuseOnAPinnedPort(t *testing.T) {
 
 func TestPublicClientsRefuseWhenTheIssuerServesNoDeviceEndpoint(t *testing.T) {
 	srv := stubPublicIssuer(t, publicStub{omitDevice: true})
-	f, ok := findingFor(verifyPublicClients(srv.URL, catalogBrowser().Spec.Port), semiont.ScriptClientID)
+	f, ok := findingFor(verifyPublicClients(srv.URL, catalogBrowser().Spec.Port), xynoplex.ScriptClientID)
 	if !ok {
 		t.Fatal("an issuer with no device endpoint passed")
 	}
@@ -641,7 +641,7 @@ func TestPublicClientsReportAnUnreachableIssuerOnce(t *testing.T) {
 // interceptable for a client that holds no secret.
 func TestPublicClientsWarnWhenPKCEIsNotRequired(t *testing.T) {
 	srv := stubPublicIssuer(t, publicStub{pkceOptional: true})
-	f, ok := findingFor(verifyPublicClients(srv.URL, catalogBrowser().Spec.Port), semiont.BrowserClientID)
+	f, ok := findingFor(verifyPublicClients(srv.URL, catalogBrowser().Spec.Port), xynoplex.BrowserClientID)
 	if !ok {
 		t.Fatal("a realm that does not require PKCE produced no finding")
 	}
@@ -668,7 +668,7 @@ func TestPublicClientsDoNotReportPKCEWhenItIsRequired(t *testing.T) {
 // the browser entirely, so it also skips every required action the realm
 // has — including the first-sign-in profile form.
 func TestPublicClientsWarnOnTheResourceOwnerPasswordGrant(t *testing.T) {
-	for _, id := range []string{semiont.BrowserClientID, semiont.ScriptClientID} {
+	for _, id := range []string{xynoplex.BrowserClientID, xynoplex.ScriptClientID} {
 		srv := stubPublicIssuer(t, publicStub{passwordGrant: id})
 		f, ok := findingFor(verifyPublicClients(srv.URL, catalogBrowser().Spec.Port), id)
 		if !ok {
@@ -810,7 +810,7 @@ func TestPublicClientsRefuseWhenImplicitFlowIsEnabled(t *testing.T) {
 	if f.warnOnly {
 		t.Error("the implicit flow must refuse the start, not warn past it")
 	}
-	if f.clientID != semiont.BrowserClientID {
+	if f.clientID != xynoplex.BrowserClientID {
 		t.Errorf("finding names %q, want the Browser client", f.clientID)
 	}
 }
@@ -838,7 +838,7 @@ func implicitFinding(findings []publicClientFinding) (publicClientFinding, bool)
 // Browser nobody can sign in to, so the start is refused.
 func TestPublicClientsRefuseARealmThatWillNotRedirectToTheDocumentsPort(t *testing.T) {
 	srv := stubPublicIssuer(t, publicStub{pinnedPort: true})
-	f, ok := findingFor(verifyPublicClients(srv.URL, 3001), semiont.BrowserClientID)
+	f, ok := findingFor(verifyPublicClients(srv.URL, 3001), xynoplex.BrowserClientID)
 	if !ok || f.warnOnly {
 		t.Fatalf("a realm pinned to :3000 was not refused for a Browser on :3001: %+v (found %v)", f, ok)
 	}
@@ -903,7 +903,7 @@ func TestBrowserOriginRefusedWhenTheRealmDerivesItsOrigins(t *testing.T) {
 	if !bad {
 		t.Fatal("a realm refusing the Browser's origin was not reported")
 	}
-	if f.clientID != semiont.BrowserClientID {
+	if f.clientID != xynoplex.BrowserClientID {
 		t.Errorf("finding names %q, want the Browser client", f.clientID)
 	}
 	if !strings.Contains(f.fix, "identity sync") {

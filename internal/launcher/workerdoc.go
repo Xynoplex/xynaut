@@ -16,7 +16,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/api"
+	"github.com/Xynoplex/sdk/go/api"
 )
 
 // workerDocumentFile: the worker is configured by a document, not a copy of

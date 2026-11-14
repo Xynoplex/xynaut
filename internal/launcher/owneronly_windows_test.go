@@ -13,7 +13,7 @@ import (
 
 	"github.com/Xynoplex/cli/internal/launcher/harness"
 
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
+	xynoplex "github.com/Xynoplex/sdk/go"
 )
 
 // inheritsFromItsParent: whether a path's access list still takes entries
@@ -136,9 +136,9 @@ func TestWhatTheLauncherKeepsIsClosedUnderAnOpenHome(t *testing.T) {
 	}
 
 	claims := base64.RawURLEncoding.EncodeToString([]byte(`{"email":"a@example.com","iss":"http://issuer.example/realms/semiont","exp":4102444800}`))
-	if err := keepSignIn(context.Background(), "local", semiont.HeldSignIn{
+	if err := keepSignIn(context.Background(), "local", xynoplex.HeldSignIn{
 		Access: "eyJhbGciOiJub25lIn0." + claims + ".c2ln", Refresh: "refresh-1",
-		ClientID: semiont.ScriptClientID, TokenEndpoint: "http://issuer.example/token",
+		ClientID: xynoplex.ScriptClientID, TokenEndpoint: "http://issuer.example/token",
 	}); err != nil {
 		t.Fatal(err)
 	}

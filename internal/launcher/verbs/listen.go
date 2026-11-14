@@ -20,9 +20,9 @@ import (
 
 	launcher "github.com/Xynoplex/cli/internal/launcher"
 
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/api"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/bus"
+	xynoplex "github.com/Xynoplex/sdk/go"
+	"github.com/Xynoplex/sdk/go/api"
+	"github.com/Xynoplex/sdk/go/bus"
 )
 
 const listenUsage = `Usage: xynaut listen [--channel <name>]... [options]
@@ -177,7 +177,7 @@ func Listen(args []string) int {
 
 	opened := false
 	for state := range c.Transport.State().Changes(ctx) {
-		if state == semiont.ConnectionStateOpen {
+		if state == xynoplex.ConnectionStateOpen {
 			opened = true
 			break
 		}
@@ -237,7 +237,7 @@ func prefetchResourceNames(c *launcher.VerbClient) map[string]string {
 	names := map[string]string{}
 	ctx, cancel := context.WithTimeout(c.Context(), prefetchTimeout)
 	defer cancel()
-	page, err := c.Browse.Resources(semiont.ResourceFilters{Limit: prefetchLimit}).Fresh(ctx)
+	page, err := c.Browse.Resources(xynoplex.ResourceFilters{Limit: prefetchLimit}).Fresh(ctx)
 	if err != nil {
 		return names
 	}
@@ -247,7 +247,7 @@ func prefetchResourceNames(c *launcher.VerbClient) map[string]string {
 	return names
 }
 
-func printEvent(u *launcher.UI, render *listenRenderer, frame semiont.Frame, asJSON bool) {
+func printEvent(u *launcher.UI, render *listenRenderer, frame xynoplex.Frame, asJSON bool) {
 	if asJSON {
 		// UNCHANGED, deliberately: scripts parse this. The human rendering must
 		// never leak into the machine one.

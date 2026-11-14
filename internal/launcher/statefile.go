@@ -9,7 +9,7 @@ import (
 	"sort"
 	"time"
 
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
+	xynoplex "github.com/Xynoplex/sdk/go"
 )
 
 // The launcher records what it believes each stack IS in stack.json under
@@ -129,7 +129,7 @@ func (st *StackState) platform() platform {
 // is (semiont.StateDir, held to protocol/specs/src/sign-in-store/cases.json), from what
 // this machine's environment says. "" when no home is resolvable.
 func StateDir() string {
-	dir, _ := semiont.StateDir(semiont.ThisSystem(), userHome(), os.Getenv("XDG_STATE_HOME"), os.Getenv("LOCALAPPDATA"))
+	dir, _ := xynoplex.StateDir(xynoplex.ThisSystem(), userHome(), os.Getenv("XDG_STATE_HOME"), os.Getenv("LOCALAPPDATA"))
 	return dir
 }
 

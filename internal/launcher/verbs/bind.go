@@ -11,7 +11,7 @@ import (
 
 	launcher "github.com/Xynoplex/cli/internal/launcher"
 
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/api"
+	"github.com/Xynoplex/sdk/go/api"
 )
 
 const bindIDs = "xynaut bind [options] -- <resourceId> <annotationId> <targetResourceId>"

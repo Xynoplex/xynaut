@@ -14,7 +14,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/api"
+	"github.com/Xynoplex/sdk/go/api"
 
 	"github.com/Xynoplex/cli/internal/launcher/harness"
 	"github.com/Xynoplex/cli/internal/launcher/stack"

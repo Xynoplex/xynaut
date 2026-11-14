@@ -10,7 +10,7 @@ import (
 
 	"github.com/Xynoplex/cli/internal/launcher/harness"
 
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
+	xynoplex "github.com/Xynoplex/sdk/go"
 )
 
 // `xynaut login` shows the one-time code AND the verification URI, always,
@@ -23,7 +23,7 @@ import (
 // step's stdin is commonly /dev/null, which IS a character device, and would
 // read as interactive.
 func TestPromptToOpenAlwaysShowsTheCodeAndURI(t *testing.T) {
-	code := semiont.DeviceCode{
+	code := xynoplex.DeviceCode{
 		UserCode:                "ABCD-1234",
 		VerificationURI:         "https://issuer.test/device",
 		VerificationURIComplete: "https://issuer.test/device?user_code=ABCD-1234",

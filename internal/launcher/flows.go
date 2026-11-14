@@ -12,7 +12,7 @@ import (
 	"strings"
 
 	"github.com/Xynoplex/cli/internal/launcher/stack"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/api"
+	"github.com/Xynoplex/sdk/go/api"
 )
 
 type flowCtx struct {

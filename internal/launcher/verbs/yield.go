@@ -15,9 +15,9 @@ import (
 
 	launcher "github.com/Xynoplex/cli/internal/launcher"
 
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/api"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/mediatypes"
+	xynoplex "github.com/Xynoplex/sdk/go"
+	"github.com/Xynoplex/sdk/go/api"
+	"github.com/Xynoplex/sdk/go/mediatypes"
 )
 
 const yieldUsage = `Usage: xynaut yield --upload <file> [--upload <file>...] [options]
@@ -280,7 +280,7 @@ func yieldOne(u *launcher.UI, c *launcher.VerbClient, root, up, name string) int
 		format = "application/octet-stream"
 	}
 
-	created, err := c.Yield.Resource(c.Context(), semiont.PutBinaryRequest{
+	created, err := c.Yield.Resource(c.Context(), xynoplex.PutBinaryRequest{
 		Name: name, Bytes: content, Format: format, StorageURI: "file://" + rel,
 	}).Wait(c.Context())
 	if err == nil {
@@ -288,12 +288,12 @@ func yieldOne(u *launcher.UI, c *launcher.VerbClient, root, up, name string) int
 		return 0
 	}
 	var rej *launcher.SessionRejected
-	var refused *semiont.TransportError
+	var refused *xynoplex.TransportError
 	refusal := c.Refusal(err)
 	switch {
 	case errors.As(refusal, &rej):
 		return launcher.RejectedFail(u, "yield", rej)
-	case errors.As(refusal, &refused) && refused.Code == semiont.TransportErrorCodeBadRequest:
+	case errors.As(refusal, &refused) && refused.Code == xynoplex.TransportErrorCodeBadRequest:
 		u.Fail("Gateway rejected %s: %s", up, refused.Message)
 	case errors.As(refusal, &refused):
 		if status, answered := refused.Status(); answered {

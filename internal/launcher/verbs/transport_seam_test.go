@@ -11,9 +11,9 @@ import (
 	launcher "github.com/Xynoplex/cli/internal/launcher"
 	"github.com/Xynoplex/cli/internal/launcher/harness"
 
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/bus"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/semionttest"
+	xynoplex "github.com/Xynoplex/sdk/go"
+	"github.com/Xynoplex/sdk/go/bus"
+	"github.com/Xynoplex/sdk/go/xynoplextest"
 )
 
 // The transport seam: a verb's wire behaviour, tested IN PROCESS.
@@ -64,7 +64,7 @@ func verbFixture(t *testing.T) {
 		t.Fatal(err)
 	}
 	recordStacks(t, localStack(launcher.ServiceState{Endpoint: "http://localhost:4000/api/health"}))
-	toks, _ := json.Marshal(map[string]semiont.SignIn{localKey: {Token: "test-token", Email: "t@example.com"}})
+	toks, _ := json.Marshal(map[string]xynoplex.SignIn{localKey: {Token: "test-token", Email: "t@example.com"}})
 	if err := os.WriteFile(filepath.Join(dir, "tokens.json"), toks, 0o600); err != nil {
 		t.Fatal(err)
 	}
@@ -72,10 +72,10 @@ func verbFixture(t *testing.T) {
 
 func TestBeckonDrivesTheInjectedTransport(t *testing.T) {
 	verbFixture(t)
-	fake := semionttest.NewFaultyTransport(semionttest.FaultyConfig{Channels: bus.BridgedChannels})
+	fake := xynoplextest.NewFaultyTransport(xynoplextest.FaultyConfig{Channels: bus.BridgedChannels})
 	fake.Counted(2)
-	var built []semiont.HTTPTransportConfig
-	restore := launcher.UseTransport(func(config semiont.HTTPTransportConfig) semiont.Transport {
+	var built []xynoplex.HTTPTransportConfig
+	restore := launcher.UseTransport(func(config xynoplex.HTTPTransportConfig) xynoplex.Transport {
 		built = append(built, config)
 		return fake
 	})
@@ -133,11 +133,11 @@ func TestBeckonReportsTheTransportsSubscriberCount(t *testing.T) {
 		{0, false, "no delivery confirmation"},
 	} {
 		verbFixture(t)
-		fake := semionttest.NewFaultyTransport(semionttest.FaultyConfig{Channels: bus.BridgedChannels})
+		fake := xynoplextest.NewFaultyTransport(xynoplextest.FaultyConfig{Channels: bus.BridgedChannels})
 		if c.counted {
 			fake.Counted(c.subscribers)
 		}
-		restore := launcher.UseTransport(func(semiont.HTTPTransportConfig) semiont.Transport { return fake })
+		restore := launcher.UseTransport(func(xynoplex.HTTPTransportConfig) xynoplex.Transport { return fake })
 		out := harness.CaptureStdout(t, func() {
 			if code := Beckon([]string{"--resource", "res-1", "--annotation", "ann-2"}); code != 0 {
 				t.Fatalf("beckon: exit %d", code)

@@ -7,7 +7,7 @@ import (
 
 	"github.com/Xynoplex/cli/internal/launcher/harness"
 
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/bus"
+	"github.com/Xynoplex/sdk/go/bus"
 )
 
 // The knowledge verbs, in process against the fake transport.

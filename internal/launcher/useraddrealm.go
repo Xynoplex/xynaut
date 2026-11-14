@@ -16,7 +16,7 @@ import (
 	"strings"
 
 	"github.com/Xynoplex/cli/internal/launcher/stack"
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
+	xynoplex "github.com/Xynoplex/sdk/go"
 )
 
 // useraddOpts: what the flags mean once parsed. The launcher owns them
@@ -215,7 +215,7 @@ func generatePassword() (string, error) {
 // is the issuer's to fill at sign-in.
 func accountIdentity(a realmAdmin, email, subject string) string {
 	named := func(value string) string {
-		did, err := semiont.PersonDid(a.domain, value)
+		did, err := xynoplex.PersonDid(a.domain, value)
 		if err != nil {
 			return err.Error()
 		}

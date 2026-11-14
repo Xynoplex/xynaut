@@ -12,7 +12,7 @@ package launcher
 import (
 	"encoding/json"
 
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/api"
+	"github.com/Xynoplex/sdk/go/api"
 )
 
 // dispatcherDocumentFile: the dispatcher is configured by a document, not a

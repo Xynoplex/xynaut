@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/Xynoplex/cli/internal/launcher/stack"
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
+	xynoplex "github.com/Xynoplex/sdk/go"
 )
 
 // controlHandler runs one request's operation, saying what it does through u:
@@ -451,7 +451,7 @@ func controlAuthLogin(req *controlRequest, u *UI) (any, *controlFailure) {
 		u.Refuse(controlCodeAlreadySignedIn, "Already signed in to %s: the gateway accepts the stored session.", key)
 		return nil, failed(u, controlCodeAlreadySignedIn)
 	}
-	signedIn, ok := signIn(req.ctx, u, target, func(code semiont.DeviceCode) {
+	signedIn, ok := signIn(req.ctx, u, target, func(code xynoplex.DeviceCode) {
 		action := ControlUserAction{RequestId: req.id, VerificationUri: code.VerificationURI,
 			VerificationUriComplete: stated(code.VerificationURIComplete), UserCode: code.UserCode,
 			ExpiresInSeconds: int(code.ExpiresIn.Seconds())}

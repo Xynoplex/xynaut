@@ -10,7 +10,7 @@ import (
 	"errors"
 	"path/filepath"
 
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
+	xynoplex "github.com/Xynoplex/sdk/go"
 )
 
 // tokensPath is the sign-in store's file; "" when there is no state home.
@@ -19,29 +19,29 @@ func tokensPath() string {
 	if dir == "" {
 		return ""
 	}
-	return filepath.Join(dir, semiont.SignInFile)
+	return filepath.Join(dir, xynoplex.SignInFile)
 }
 
 // signInStore is the store the launcher keeps its sign-ins in; false when
 // there is no state home to keep it in.
-func signInStore() (*semiont.SignInStore, bool) {
+func signInStore() (*xynoplex.SignInStore, bool) {
 	path := tokensPath()
 	if path == "" {
 		return nil, false
 	}
-	return semiont.NewSignInStore(path), true
+	return xynoplex.NewSignInStore(path), true
 }
 
 // LoadTokens is every sign-in the store holds, by stack key: none when there
 // is no store, or it cannot be read.
-func LoadTokens() map[string]semiont.SignIn {
+func LoadTokens() map[string]xynoplex.SignIn {
 	store, ok := signInStore()
 	if !ok {
-		return map[string]semiont.SignIn{}
+		return map[string]xynoplex.SignIn{}
 	}
 	signIns, err := store.SignIns()
 	if err != nil {
-		return map[string]semiont.SignIn{}
+		return map[string]xynoplex.SignIn{}
 	}
 	for _, s := range signIns {
 		noteSecret(s.Token)
@@ -53,7 +53,7 @@ func LoadTokens() map[string]semiont.SignIn {
 // keepSignIn keeps the sign-in of the stack key. The store keeps the state
 // home to its owner before it writes, with everything created in it from then
 // on: the store's file, its lock, and what a renewal writes in their place.
-func keepSignIn(ctx context.Context, key string, held semiont.HeldSignIn) error {
+func keepSignIn(ctx context.Context, key string, held xynoplex.HeldSignIn) error {
 	store, ok := signInStore()
 	if !ok {
 		return errors.New("there is no state home to keep the session in")

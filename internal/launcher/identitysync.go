@@ -30,7 +30,7 @@ import (
 	"strings"
 	"time"
 
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
+	xynoplex "github.com/Xynoplex/sdk/go"
 )
 
 var adminHTTP = &http.Client{Transport: launcherTransport, Timeout: 15 * time.Second}
@@ -82,7 +82,7 @@ func reconcilePublicClients(base, realm, token string, browserPort int, rep *syn
 	if err != nil {
 		return err
 	}
-	for _, id := range []string{semiont.BrowserClientID, semiont.ScriptClientID} {
+	for _, id := range []string{xynoplex.BrowserClientID, xynoplex.ScriptClientID} {
 		c, ok := clients[id]
 		if !ok {
 			continue // absent is a preflight refusal, not something to invent here
@@ -94,7 +94,7 @@ func reconcilePublicClients(base, realm, token string, browserPort int, rep *syn
 			patch["implicitFlowEnabled"] = false
 			changes = append(changes, "implicit flow disabled")
 		}
-		if id == semiont.BrowserClientID {
+		if id == xynoplex.BrowserClientID {
 			have := stringsOf(c.rep["redirectUris"])
 			missing := []string{}
 			for _, want := range loopbackRedirectUris() {

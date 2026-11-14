@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
+	xynoplex "github.com/Xynoplex/sdk/go"
 )
 
 // A worker granted by its key, against a REAL Keycloak, in a throwaway realm.
@@ -64,7 +64,7 @@ func TestWorkerGrantLive(t *testing.T) {
 		return k
 	}
 	signIn := func(k workerKey) (map[string]any, error) {
-		return clientCredentialsClaims(tokenEndpoint, semiont.KeyCredential{Issuer: issuer, ClientID: workerClientID(label), PrivateKey: k.signer})
+		return clientCredentialsClaims(tokenEndpoint, xynoplex.KeyCredential{Issuer: issuer, ClientID: workerClientID(label), PrivateKey: k.signer})
 	}
 
 	// 1. A grant makes a client Keycloak admits the worker's assertion at, and

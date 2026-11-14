@@ -22,7 +22,7 @@ import (
 	"slices"
 	"sort"
 
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/api"
+	"github.com/Xynoplex/sdk/go/api"
 )
 
 // workerListFile: where the list is kept, under sharedStateDir.

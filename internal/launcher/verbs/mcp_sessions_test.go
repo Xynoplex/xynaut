@@ -19,9 +19,9 @@ import (
 
 	launcher "github.com/Xynoplex/cli/internal/launcher"
 
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/bus"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/semionttest"
+	xynoplex "github.com/Xynoplex/sdk/go"
+	"github.com/Xynoplex/sdk/go/bus"
+	"github.com/Xynoplex/sdk/go/xynoplextest"
 )
 
 func TestMCPASessionIsResumedOnItsFirstCallAndHeldForTheNext(t *testing.T) {
@@ -67,8 +67,8 @@ func TestMCPASessionThatCannotBeRenewedIsRefusedAndTheNextCallAtOnce(t *testing.
 	// Signed in again, the knowledge base is resumed on its next call. The
 	// session that ended closed its transport, as every session does, so the
 	// next is given one of its own.
-	fresh := semionttest.NewFaultyTransport(semionttest.FaultyConfig{Channels: bus.BridgedChannels})
-	t.Cleanup(launcher.UseTransport(func(semiont.HTTPTransportConfig) semiont.Transport { return fresh }))
+	fresh := xynoplextest.NewFaultyTransport(xynoplextest.FaultyConfig{Channels: bus.BridgedChannels})
+	t.Cleanup(launcher.UseTransport(func(xynoplex.HTTPTransportConfig) xynoplex.Transport { return fresh }))
 	renewing := newIssuerStub(t, http.StatusOK, renewed())
 	storeSession(t, renewing, 300*time.Second)
 	third := callTool(t, cs, "browse_resources", map[string]any{})
@@ -102,9 +102,9 @@ func recordCodespace(t *testing.T) {
 	if err := os.WriteFile(path, written, 0o600); err != nil {
 		t.Fatal(err)
 	}
-	store := semiont.NewSignInStore(filepath.Join(launcher.StateDir(), semiont.SignInFile))
-	if err := store.Entry("codespace:o/n").Keep(context.Background(), semiont.HeldSignIn{
-		Access: tokenTagged("cs-token", 300*time.Second), ClientID: semiont.ScriptClientID,
+	store := xynoplex.NewSignInStore(filepath.Join(launcher.StateDir(), xynoplex.SignInFile))
+	if err := store.Entry("codespace:o/n").Keep(context.Background(), xynoplex.HeldSignIn{
+		Access: tokenTagged("cs-token", 300*time.Second), ClientID: xynoplex.ScriptClientID,
 	}); err != nil {
 		t.Fatal(err)
 	}

@@ -29,7 +29,7 @@ import (
 
 	launcher "github.com/Xynoplex/cli/internal/launcher"
 
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
+	xynoplex "github.com/Xynoplex/sdk/go"
 )
 
 const mcpUsage = `Usage: xynaut mcp
@@ -295,7 +295,7 @@ func mcpFailure(call mcpCall, err error) string {
 	if errors.As(err, &rejected) {
 		return fmt.Sprintf("%s: %v. Sign in again: %s", call.kb, rejected, signInCommand(call.kb))
 	}
-	var failed *semiont.BusRequestError
+	var failed *xynoplex.BusRequestError
 	if errors.As(err, &failed) && failed.Failure != nil {
 		return "The knowledge base refused it: " + failed.Message
 	}

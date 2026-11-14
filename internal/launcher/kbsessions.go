@@ -15,7 +15,7 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/bus"
+	"github.com/Xynoplex/sdk/go/bus"
 )
 
 // KnowledgeBase is a stack recorded here, with a stored sign-in.

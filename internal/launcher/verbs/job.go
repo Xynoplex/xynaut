@@ -21,9 +21,9 @@ import (
 
 	launcher "github.com/Xynoplex/cli/internal/launcher"
 
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/api"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/bus"
+	xynoplex "github.com/Xynoplex/sdk/go"
+	"github.com/Xynoplex/sdk/go/api"
+	"github.com/Xynoplex/sdk/go/bus"
 )
 
 // jobChannels: the broadcasts a delegated job is followed on. A delegated
@@ -33,7 +33,7 @@ var jobChannels = []bus.Channel{bus.JobReportProgress.Channel(), bus.JobComplete
 // arrival is what the stream delivered on a channel: a frame, or, in place of
 // one it refused, the refusal.
 type arrival struct {
-	frame   semiont.Frame
+	frame   xynoplex.Frame
 	refused error
 }
 
@@ -42,7 +42,7 @@ type arrival struct {
 // while nobody reads wait, in the order the stream delivered them, whatever
 // their channel: a job's progress is read before the completion that followed
 // it.
-func arrivals(ctx context.Context, transport semiont.Transport, channels []bus.Channel) (frames <-chan arrival, stop func(), err error) {
+func arrivals(ctx context.Context, transport xynoplex.Transport, channels []bus.Channel) (frames <-chan arrival, stop func(), err error) {
 	reading, stop := context.WithCancel(ctx)
 	listener, err := transport.Frames(reading, channels...)
 	if err != nil {
@@ -65,12 +65,12 @@ func arrivals(ctx context.Context, transport semiont.Transport, channels []bus.C
 // dropped is closed when the stream, once open, stops being open. What the
 // gateway broadcast while it was down is not sent again, so a verb following
 // broadcasts cannot know what it missed.
-func dropped(ctx context.Context, transport semiont.Transport) <-chan struct{} {
+func dropped(ctx context.Context, transport xynoplex.Transport) <-chan struct{} {
 	out := make(chan struct{})
 	go func() {
 		opened := false
 		for state := range transport.State().Changes(ctx) {
-			if state == semiont.ConnectionStateOpen {
+			if state == xynoplex.ConnectionStateOpen {
 				opened = true
 			} else if opened {
 				close(out)
@@ -96,15 +96,15 @@ type delegation struct {
 // it, its progress, and each attempt the queue runs again. It gives the
 // completion. ok=false: the job failed, could not be created or followed, or
 // completed as another verb's, and that was said.
-func follow[C any](u *launcher.UI, c *launcher.VerbClient, d delegation, job *semiont.Delegation[C]) (done C, ok bool) {
+func follow[C any](u *launcher.UI, c *launcher.VerbClient, d delegation, job *xynoplex.Delegation[C]) (done C, ok bool) {
 	var jobID api.JobId
 	for event, err := range job.Events(c.Context()) {
 		if err != nil {
-			var failed *semiont.JobError
+			var failed *xynoplex.JobError
 			switch {
 			case errors.As(err, &failed):
 				u.Fail("%s failed: %s", d.failed, failed.Message)
-				if failed.Code != semiont.JobErrorCodeFailed {
+				if failed.Code != xynoplex.JobErrorCodeFailed {
 					fmt.Fprintln(os.Stderr, "  What the job did:  "+d.check)
 				}
 			case jobID.IsZero():
@@ -122,14 +122,14 @@ func follow[C any](u *launcher.UI, c *launcher.VerbClient, d delegation, job *se
 			return done, false
 		}
 		switch e := event.(type) {
-		case semiont.JobCreated:
+		case xynoplex.JobCreated:
 			jobID = e.Data.JobId
 			note := "job " + jobID.String()
 			if d.note != "" {
 				note = d.note + "; " + note
 			}
 			u.Log("%s %s", d.doing, u.Dim("("+note+")"))
-		case semiont.JobProgressed:
+		case xynoplex.JobProgressed:
 			// JobProgress is the one progress shape for every job type. The
 			// wire carries a code and typed params, never a sentence: each
 			// client owns its own words. A code this launcher does not know
@@ -137,13 +137,13 @@ func follow[C any](u *launcher.UI, c *launcher.VerbClient, d delegation, job *se
 			if text := progressText(e.Data.Message); text != "" {
 				u.Log("%s", u.Dim(text))
 			}
-		case semiont.JobAttemptFailed:
+		case xynoplex.JobAttemptFailed:
 			attempt := "An attempt"
 			if e.Data.Attempt != nil {
 				attempt = fmt.Sprintf("Attempt %d", *e.Data.Attempt)
 			}
 			u.Log("%s", u.Dim(fmt.Sprintf("%s failed (%s); the queue is running the job again", attempt, e.Data.Error)))
-		case semiont.JobCompleted[C]:
+		case xynoplex.JobCompleted[C]:
 			return e.Data, true
 		}
 	}

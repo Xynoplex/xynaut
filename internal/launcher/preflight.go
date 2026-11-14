@@ -26,7 +26,7 @@ import (
 	"strings"
 	"time"
 
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
+	xynoplex "github.com/Xynoplex/sdk/go"
 )
 
 // serviceAccountFinding: one service client's reason for refusal. A finding
@@ -102,10 +102,10 @@ func verifyServiceAccounts(issuerBase, audience string, accounts realmAccounts) 
 		}
 	}
 	for _, svc := range secretClients {
-		claims, err := clientCredentialsClaims(endpoint, semiont.SecretCredential{Issuer: issuerBase, ClientID: serviceClientID(svc), ClientSecret: accounts.secrets[svc]})
+		claims, err := clientCredentialsClaims(endpoint, xynoplex.SecretCredential{Issuer: issuerBase, ClientID: serviceClientID(svc), ClientSecret: accounts.secrets[svc]})
 		check(svc, claims, err, "the realm has no such client, or its secret differs")
 	}
-	claims, err := clientCredentialsClaims(endpoint, semiont.KeyCredential{Issuer: issuerBase, ClientID: serviceClientID("worker"), PrivateKey: accounts.worker.signer})
+	claims, err := clientCredentialsClaims(endpoint, xynoplex.KeyCredential{Issuer: issuerBase, ClientID: serviceClientID("worker"), PrivateKey: accounts.worker.signer})
 	check("worker", claims, err, "the realm has no such client, or it holds another key than the worker's")
 	return findings, observedLifespan
 }
@@ -257,12 +257,12 @@ func verifyBrowserOrigin(issuerBase string, port int) (publicClientFinding, bool
 		return publicClientFinding{}, false
 	}
 	origin := fmt.Sprintf("http://localhost:%d", port)
-	allowed, err := tokenOriginProbe(eps.token, semiont.BrowserClientID, origin)
+	allowed, err := tokenOriginProbe(eps.token, xynoplex.BrowserClientID, origin)
 	if err != nil || allowed == origin {
 		return publicClientFinding{}, false // unreachable, or the origin is allowed
 	}
 	return publicClientFinding{
-		clientID: semiont.BrowserClientID,
+		clientID: xynoplex.BrowserClientID,
 		reason:   fmt.Sprintf("the realm will not accept a token exchange from %s (no Access-Control-Allow-Origin)", origin),
 		fix:      fmt.Sprintf("its web origins do not name the Browser's origin — a realm created before this was fixed derives them from the portless loopback redirects, which drops the port. Run `xynaut identity sync`; sign-in at %s would fail after a redirect that worked", origin),
 	}, true
@@ -317,7 +317,7 @@ func verifyPublicClients(issuerBase string, browserPort int) []publicClientFindi
 	eps, err := discoverEndpoints(issuerBase)
 	if err != nil {
 		return []publicClientFinding{{
-			clientID: semiont.BrowserClientID,
+			clientID: xynoplex.BrowserClientID,
 			reason:   fmt.Sprintf("OIDC discovery at %s failed: %v", issuerBase, err),
 			fix:      "is the issuer reachable from this host?",
 		}}
@@ -330,25 +330,25 @@ func verifyPublicClients(issuerBase string, browserPort int) []publicClientFindi
 	// client exists AND may use the grant.
 	if eps.device == "" {
 		findings = append(findings, publicClientFinding{
-			clientID: semiont.ScriptClientID,
+			clientID: xynoplex.ScriptClientID,
 			reason:   "the issuer publishes no device_authorization_endpoint",
 			fix:      "`xynaut login` cannot work against this issuer",
 		})
 	} else {
-		switch code, oauthErr, err := deviceGrantProbe(eps.device, semiont.ScriptClientID); {
+		switch code, oauthErr, err := deviceGrantProbe(eps.device, xynoplex.ScriptClientID); {
 		case err != nil:
-			findings = append(findings, publicClientFinding{clientID: semiont.ScriptClientID, reason: err.Error()})
+			findings = append(findings, publicClientFinding{clientID: xynoplex.ScriptClientID, reason: err.Error()})
 		case code == http.StatusOK:
 			// exists, and the grant is enabled
 		case oauthErr == "invalid_client":
 			findings = append(findings, publicClientFinding{
-				clientID: semiont.ScriptClientID,
+				clientID: xynoplex.ScriptClientID,
 				reason:   "the realm has no such client",
 				fix:      "a realm created before this client existed will not have it",
 			})
 		default:
 			findings = append(findings, publicClientFinding{
-				clientID: semiont.ScriptClientID,
+				clientID: xynoplex.ScriptClientID,
 				reason:   fmt.Sprintf("device authorization refused (HTTP %d, %s)", code, oauthErr),
 				fix:      "the client exists but may not use the device grant",
 			})
@@ -359,10 +359,10 @@ func verifyPublicClients(issuerBase string, browserPort int) []publicClientFindi
 	// as a redirect problem.
 	browserExists := true
 	if eps.device != "" {
-		if _, oauthErr, err := deviceGrantProbe(eps.device, semiont.BrowserClientID); err == nil && oauthErr == "invalid_client" {
+		if _, oauthErr, err := deviceGrantProbe(eps.device, xynoplex.BrowserClientID); err == nil && oauthErr == "invalid_client" {
 			browserExists = false
 			findings = append(findings, publicClientFinding{
-				clientID: semiont.BrowserClientID,
+				clientID: xynoplex.BrowserClientID,
 				reason:   "the realm has no such client",
 				fix:      "a realm created before this client existed will not have it; nobody can sign in from a browser",
 			})
@@ -371,24 +371,24 @@ func verifyPublicClients(issuerBase string, browserPort int) []publicClientFindi
 
 	if browserExists && eps.authorization == "" {
 		findings = append(findings, publicClientFinding{
-			clientID: semiont.BrowserClientID,
+			clientID: xynoplex.BrowserClientID,
 			reason:   "the issuer publishes no authorization_endpoint",
 			fix:      "nobody could sign in from a browser against this issuer",
 		})
 	} else if browserExists {
 		probeRedirect := browserRedirect(browserPort)
-		if code, err := authorizationProbe(eps.authorization, semiont.BrowserClientID, probeRedirect, responseCode, withPKCE); err != nil {
-			findings = append(findings, publicClientFinding{clientID: semiont.BrowserClientID, reason: err.Error()})
+		if code, err := authorizationProbe(eps.authorization, xynoplex.BrowserClientID, probeRedirect, responseCode, withPKCE); err != nil {
+			findings = append(findings, publicClientFinding{clientID: xynoplex.BrowserClientID, reason: err.Error()})
 		} else if code != http.StatusOK {
 			findings = append(findings, publicClientFinding{
-				clientID: semiont.BrowserClientID,
+				clientID: xynoplex.BrowserClientID,
 				reason:   fmt.Sprintf("the realm will not redirect to %s (HTTP %d)", probeRedirect, code),
 				fix:      "its registered redirect URIs do not cover the Browser; sign-in would fail at the issuer",
 			})
 		} else {
-			if code, err := authorizationProbe(eps.authorization, semiont.BrowserClientID, probeRedirectOtherPort, responseCode, withPKCE); err == nil && code != http.StatusOK {
+			if code, err := authorizationProbe(eps.authorization, xynoplex.BrowserClientID, probeRedirectOtherPort, responseCode, withPKCE); err == nil && code != http.StatusOK {
 				findings = append(findings, publicClientFinding{
-					clientID: semiont.BrowserClientID,
+					clientID: xynoplex.BrowserClientID,
 					warnOnly: true,
 					reason:   fmt.Sprintf("the realm pins the Browser to a port: it redirects to %s and to no other", probeRedirect),
 					fix:      "another port in the Browser's document will not work: this realm predates the portless loopback redirect (RFC 8252 §7.3). Run `xynaut identity sync`, or add `http://localhost/*` to the client",
@@ -406,9 +406,9 @@ func verifyPublicClients(issuerBase string, browserPort int) []publicClientFindi
 			// than a warning: its neighbours here describe a realm that is
 			// merely behind, while this one is a live way to leak a bearer
 			// token, and a stack that starts is a stack that leaks it.
-			if code, err := authorizationProbe(eps.authorization, semiont.BrowserClientID, probeRedirect, responseToken, withoutPKCE); err == nil && code == http.StatusOK {
+			if code, err := authorizationProbe(eps.authorization, xynoplex.BrowserClientID, probeRedirect, responseToken, withoutPKCE); err == nil && code == http.StatusOK {
 				findings = append(findings, publicClientFinding{
-					clientID: semiont.BrowserClientID,
+					clientID: xynoplex.BrowserClientID,
 					reason:   "the realm allows the IMPLICIT flow — an authorization request with response_type=token is accepted",
 					fix:      "set `implicitFlowEnabled` to false on this client; the access token would come back in a redirect fragment rather than through the code exchange",
 				})
@@ -421,9 +421,9 @@ func verifyPublicClients(issuerBase string, browserPort int) []publicClientFindi
 			if f, bad := verifyBrowserOrigin(issuerBase, browserPort); bad {
 				findings = append(findings, f)
 			}
-			if code, err := authorizationProbe(eps.authorization, semiont.BrowserClientID, probeRedirect, responseCode, withoutPKCE); err == nil && code == http.StatusOK {
+			if code, err := authorizationProbe(eps.authorization, xynoplex.BrowserClientID, probeRedirect, responseCode, withoutPKCE); err == nil && code == http.StatusOK {
 				findings = append(findings, publicClientFinding{
-					clientID: semiont.BrowserClientID,
+					clientID: xynoplex.BrowserClientID,
 					warnOnly: true,
 					reason:   "the realm does not REQUIRE PKCE — an authorization request carrying no code challenge is accepted",
 					fix:      "set `pkce.code.challenge.method` to S256 on the client; this client holds no secret, so PKCE is what binds the code to its requester",
@@ -436,7 +436,7 @@ func verifyPublicClients(issuerBase string, browserPort int) []publicClientFindi
 	// resource-owner grant hands a public client someone's password directly —
 	// no browser, nothing phishing-resistant, and it walks straight past the
 	// realm's required actions, including the first-sign-in profile form.
-	for _, id := range []string{semiont.BrowserClientID, semiont.ScriptClientID} {
+	for _, id := range []string{xynoplex.BrowserClientID, xynoplex.ScriptClientID} {
 		oauthErr, err := directAccessGrantProbe(eps.token, id)
 		if err != nil || oauthErr == "unauthorized_client" {
 			continue // unreachable, or correctly refused
@@ -614,7 +614,7 @@ func discoverEndpoints(issuerBase string) (oidcEndpoints, error) {
 //
 // Errors carry the STATUS and never the body: a token endpoint's error body
 // can echo the request, and the request carried the client's proof.
-func clientCredentialsClaims(tokenEndpoint string, credential semiont.Credential) (map[string]any, error) {
+func clientCredentialsClaims(tokenEndpoint string, credential xynoplex.Credential) (map[string]any, error) {
 	form, err := credential.GrantForm(tokenEndpoint)
 	if err != nil {
 		return nil, fmt.Errorf("making the client-credentials grant: %v", err)

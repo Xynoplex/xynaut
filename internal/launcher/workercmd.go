@@ -18,7 +18,7 @@ import (
 	"slices"
 	"strings"
 
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
+	xynoplex "github.com/Xynoplex/sdk/go"
 )
 
 const workerUsage = `Usage: xynaut worker key [--pem]
@@ -173,7 +173,7 @@ func workerKBAdd(u *UI, args []string) int {
 		return 1
 	}
 	domain := positional[0]
-	if _, err := semiont.KbDid(domain); err != nil {
+	if _, err := xynoplex.KbDid(domain); err != nil {
 		u.Fail("%q is not a knowledge base's domain: %v", domain, err)
 		return 1
 	}

@@ -16,8 +16,8 @@ import (
 
 	launcher "github.com/Xynoplex/cli/internal/launcher"
 
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/api"
+	xynoplex "github.com/Xynoplex/sdk/go"
+	"github.com/Xynoplex/sdk/go/api"
 )
 
 // listedKnowledgeBase is one row of knowledge_bases' answer.
@@ -58,7 +58,7 @@ var mcpHandlers = map[string]mcpHandler{
 		Limit      int     `json:"limit"`
 		Offset     int     `json:"offset"`
 	}) (mcpAnswer, error) {
-		found, err := call.client().Match.Resources(args.Search, semiont.ResourceFilters{Limit: args.Limit, Offset: args.Offset, Archived: args.Archived, EntityType: args.EntityType}).Fresh(ctx)
+		found, err := call.client().Match.Resources(args.Search, xynoplex.ResourceFilters{Limit: args.Limit, Offset: args.Offset, Archived: args.Archived, EntityType: args.EntityType}).Fresh(ctx)
 		return mcpAnswer{structured: found}, err
 	}),
 
@@ -68,7 +68,7 @@ var mcpHandlers = map[string]mcpHandler{
 		Limit      int     `json:"limit"`
 		Offset     int     `json:"offset"`
 	}) (mcpAnswer, error) {
-		listed, err := call.client().Browse.Resources(semiont.ResourceFilters{Limit: args.Limit, Offset: args.Offset, Archived: args.Archived, EntityType: args.EntityType}).Fresh(ctx)
+		listed, err := call.client().Browse.Resources(xynoplex.ResourceFilters{Limit: args.Limit, Offset: args.Offset, Archived: args.Archived, EntityType: args.EntityType}).Fresh(ctx)
 		return mcpAnswer{structured: listed}, err
 	}),
 
@@ -112,7 +112,7 @@ var mcpHandlers = map[string]mcpHandler{
 		ResourceId api.ResourceId                    `json:"resourceId"`
 		Options    *api.GatherResourceRequestOptions `json:"options"`
 	}) (mcpAnswer, error) {
-		options := semiont.GatherResourceDefaults()
+		options := xynoplex.GatherResourceDefaults()
 		if args.Options != nil {
 			options = *args.Options
 		}
@@ -180,7 +180,7 @@ var mcpHandlers = map[string]mcpHandler{
 		if err != nil {
 			return mcpAnswer{}, err
 		}
-		found, err := c.Match.Search(args.ResourceId, args.ReferenceId, gathered.Response, semiont.MatchSearchOptions{Limit: args.Limit, UseSemanticScoring: args.UseSemanticScoring}).Wait(ctx)
+		found, err := c.Match.Search(args.ResourceId, args.ReferenceId, gathered.Response, xynoplex.MatchSearchOptions{Limit: args.Limit, UseSemanticScoring: args.UseSemanticScoring}).Wait(ctx)
 		return mcpAnswer{structured: found}, err
 	}),
 
@@ -202,7 +202,7 @@ var mcpHandlers = map[string]mcpHandler{
 		StorageUri string `json:"storageUri"`
 		Language   string `json:"language"`
 	}) (mcpAnswer, error) {
-		upload := call.client().Yield.Resource(ctx, semiont.PutBinaryRequest{Name: args.Name, Bytes: []byte(args.File), Format: args.Format, StorageURI: args.StorageUri, Language: args.Language})
+		upload := call.client().Yield.Resource(ctx, xynoplex.PutBinaryRequest{Name: args.Name, Bytes: []byte(args.File), Format: args.Format, StorageURI: args.StorageUri, Language: args.Language})
 		created, err := upload.Wait(ctx)
 		return mcpAnswer{structured: map[string]any{"resourceId": created.ResourceId}}, err
 	}),

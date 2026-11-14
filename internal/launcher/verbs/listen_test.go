@@ -10,10 +10,10 @@ import (
 	launcher "github.com/Xynoplex/cli/internal/launcher"
 	"github.com/Xynoplex/cli/internal/launcher/harness"
 
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/api"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/bus"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/semionttest"
+	xynoplex "github.com/Xynoplex/sdk/go"
+	"github.com/Xynoplex/sdk/go/api"
+	"github.com/Xynoplex/sdk/go/bus"
+	"github.com/Xynoplex/sdk/go/xynoplextest"
 )
 
 // `xynaut listen`, in process against the faulty transport. It runs until
@@ -54,7 +54,7 @@ type listening struct {
 // listened runs listen with args against fake: the names it asks for are
 // answered with names; once it has asked, asked is called, frames are
 // delivered, and then the stream drops.
-func listened(t *testing.T, fake *semionttest.FaultyTransport, args []string, names json.RawMessage, asked func(), frames ...semiont.Frame) listening {
+func listened(t *testing.T, fake *xynoplextest.FaultyTransport, args []string, names json.RawMessage, asked func(), frames ...xynoplex.Frame) listening {
 	t.Helper()
 	fake.QueueReply(namesAsked, names)
 	var run listening
@@ -69,7 +69,7 @@ func listened(t *testing.T, fake *semionttest.FaultyTransport, args []string, na
 			fake.Deliver(frame)
 		}
 		time.Sleep(printing)
-		fake.SetState(semiont.ConnectionStateReconnecting)
+		fake.SetState(xynoplex.ConnectionStateReconnecting)
 		select {
 		case run.code = <-done:
 			run.ended = true
@@ -87,7 +87,7 @@ func TestListenRendersWhatArrivesByNameAndSaysWhenTheStreamDropsInProcess(t *tes
 	fake, restore := withFake(t)
 	defer restore()
 	names := json.RawMessage(`{"resources":[{"@context":"https://schema.org/","@id":"res-42","name":"The Iliad","representations":[]}],"total":1,"offset":0,"limit":200}`)
-	viewed := semiont.Frame{Channel: bus.BrowseResourceViewed.Channel(), Payload: json.RawMessage(`{"resourceId":"res-42"}`)}
+	viewed := xynoplex.Frame{Channel: bus.BrowseResourceViewed.Channel(), Payload: json.RawMessage(`{"resourceId":"res-42"}`)}
 
 	run := listened(t, fake, nil, names, func() {}, viewed)
 	// A stream that ends on its own is not a stop the user asked for.
@@ -117,7 +117,7 @@ func TestListenToAScopeHoldsItAndPrintsWhatItCarriesRawInProcess(t *testing.T) {
 		t.Fatal(err)
 	}
 	carried := bus.ResourceScopedChannels[0]
-	frame := semiont.Frame{Channel: carried, Envelope: semiont.Envelope{Scope: resource}, Payload: json.RawMessage(`{"resourceId":"res-7"}`)}
+	frame := xynoplex.Frame{Channel: carried, Envelope: xynoplex.Envelope{Scope: resource}, Payload: json.RawMessage(`{"resourceId":"res-7"}`)}
 	held := 0
 
 	run := listened(t, fake, []string{"--scope", "res-7", "--json"}, noNames, func() { held = fake.Holds(resource) }, frame)
@@ -155,8 +155,8 @@ func TestListenDoesNotWarnOfAnOperationsRequestInProcess(t *testing.T) {
 	verbFixture(t)
 	request := bus.FrameAddEntityType.Request().Channel()
 	// The stream names the request, as the one listen asks for does.
-	fake := semionttest.NewFaultyTransport(semionttest.FaultyConfig{Channels: slices.Concat(bus.BridgedChannels, []bus.Channel{request})})
-	defer launcher.UseTransport(func(semiont.HTTPTransportConfig) semiont.Transport { return fake })()
+	fake := xynoplextest.NewFaultyTransport(xynoplextest.FaultyConfig{Channels: slices.Concat(bus.BridgedChannels, []bus.Channel{request})})
+	defer launcher.UseTransport(func(xynoplex.HTTPTransportConfig) xynoplex.Transport { return fake })()
 	run := listened(t, fake, []string{"--channel", string(request)}, noNames, func() {})
 	if strings.Contains(run.output, "is not a bridged channel") {
 		t.Errorf("listen warned of %s, which the gateway delivers:\n%s", request, run.output)

@@ -20,9 +20,9 @@ import (
 	"strconv"
 	"sync"
 
-	semiont "github.com/The-AI-Alliance/semiont/packages/go/sdk"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/api"
-	"github.com/The-AI-Alliance/semiont/packages/go/sdk/bus"
+	xynoplex "github.com/Xynoplex/sdk/go"
+	"github.com/Xynoplex/sdk/go/api"
+	"github.com/Xynoplex/sdk/go/bus"
 )
 
 // Session is one command's session with a stack: the SDK's session over the
@@ -32,10 +32,10 @@ type Session struct {
 	u      *UI
 	key    string // token/stack key: "local:<key>" or "codespace:<repo>"
 	base   string // the stack's gateway base URL, which the tokens are for
-	signIn semiont.SignIn
-	token  *semiont.Variable[string]
+	signIn xynoplex.SignIn
+	token  *xynoplex.Variable[string]
 	client *VerbClient
-	sdk    *semiont.Session
+	sdk    *xynoplex.Session
 	// resumed is closed once sdk is set. The client is made before the SDK's
 	// session, and its stream can be refused, and ask Refresh for a token,
 	// while that session is still being resumed.
@@ -109,7 +109,7 @@ func resume(u *UI, key, base string, channels []bus.Channel) (*Session, error) {
 		return nil, fmt.Errorf("the session for %s cannot be resumed: %w", key, err)
 	}
 	ended, stop := context.WithCancelCause(context.Background())
-	s := &Session{u: u, key: key, base: base, signIn: signIn, token: semiont.NewVariable(""), resumed: make(chan struct{}), ended: ended, stop: stop}
+	s := &Session{u: u, key: key, base: base, signIn: signIn, token: xynoplex.NewVariable(""), resumed: make(chan struct{}), ended: ended, stop: stop}
 	// A sign-in that cannot be renewed is no session the SDK holds: its token
 	// is sent as it is, and the gateway is the judge.
 	if signIn.RefreshToken == "" {
@@ -119,13 +119,13 @@ func resume(u *UI, key, base string, channels []bus.Channel) (*Session, error) {
 	// transport asks this session for a renewed token, and this session asks
 	// the SDK's.
 	s.client = s.openClient(channels)
-	s.sdk, err = semiont.ResumeSession(context.Background(), semiont.ResumeConfig{
+	s.sdk, err = xynoplex.ResumeSession(context.Background(), xynoplex.ResumeConfig{
 		Kb:     target,
 		Client: s.client.Client,
 		Kept:   store.Entry(key),
 		Token:  s.token,
 		HTTP:   &http.Client{Transport: launcherTransport},
-		Timing: semiont.DefaultTiming(),
+		Timing: xynoplex.DefaultTiming(),
 	})
 	if err != nil {
 		s.client.closeClient()
@@ -169,7 +169,7 @@ func (s *Session) hear() <-chan struct{} {
 	go func() {
 		defer close(heard)
 		for failure := range errs {
-			var own *semiont.SessionError
+			var own *xynoplex.SessionError
 			if errors.As(failure, &own) {
 				s.failed(own)
 			}
@@ -194,13 +194,13 @@ func (s *Session) noteRenewal(before string) {
 // start refuses nothing: the command goes on, and its requests are the judge.
 // An issuer that did not refuse to renew an expired token leaves no token to
 // go on with: the command says why.
-func (s *Session) failed(err *semiont.SessionError) {
+func (s *Session) failed(err *xynoplex.SessionError) {
 	switch err.Code {
-	case semiont.SessionErrorCodeRefreshExhausted:
+	case xynoplex.SessionErrorCodeRefreshExhausted:
 		s.end(&SessionRejected{refresh: errors.New(err.Message), kept: s.stillKept()})
-	case semiont.SessionErrorCodeCredentialRefused:
+	case xynoplex.SessionErrorCodeCredentialRefused:
 		s.end(&SessionRejected{})
-	case semiont.SessionErrorCodeAuthFailed:
+	case xynoplex.SessionErrorCodeAuthFailed:
 		s.mu.Lock()
 		defer s.mu.Unlock()
 		s.unconfirmed = err.Message
@@ -322,8 +322,8 @@ func (s *Session) over(why *SessionRejected) {
 
 // unauthorized: the gateway refused the token a call bore.
 func unauthorized(err error) bool {
-	var refused *semiont.TransportError
-	return errors.As(err, &refused) && refused.Code == semiont.TransportErrorCodeUnauthorized
+	var refused *xynoplex.TransportError
+	return errors.As(err, &refused) && refused.Code == xynoplex.TransportErrorCodeUnauthorized
 }
 
 // SessionRejected: the gateway refused the token and the renewal could not
@@ -478,8 +478,8 @@ func signOut(ctx context.Context, u *UI, target *StackState) (ControlAuthLogoutR
 	}
 	// Issuer-side first, best-effort: an unreachable issuer must not trap the
 	// user in a session they asked to end — but say what it means.
-	issuer := semiont.Issuer{HTTP: &http.Client{Transport: launcherTransport}, Timing: semiont.DefaultTiming()}
-	revoked, err := semiont.SignOut(ctx, issuer, store.Entry(key))
+	issuer := xynoplex.Issuer{HTTP: &http.Client{Transport: launcherTransport}, Timing: xynoplex.DefaultTiming()}
+	revoked, err := xynoplex.SignOut(ctx, issuer, store.Entry(key))
 	if err != nil {
 		u.Refuse(controlCodeFailed, "Could not remove the stored session: %v", err)
 		return ControlAuthLogoutResult{}, false
